@@ -11,16 +11,20 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v0.1.10
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
+          username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd ~/UPI_Mesh || git clone https://github.com/Shashank17singh/UPI_Mesh.git ~/UPI_Mesh
-            cd ~/UPI_Mesh
+            if [ ! -d "/home/ubuntu/UPI_Mesh" ]; then
+              cd /home/ubuntu
+              git clone https://github.com/Shashank17singh/UPI_Mesh.git
+            fi
+            
+            cd /home/ubuntu/UPI_Mesh
             git pull origin main
             sudo docker-compose up -d --build

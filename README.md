@@ -4,6 +4,8 @@
 
 **A payment backend that settles UPI-style transactions with zero internet — hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard**
 
+🚀 **[Live Demo Available Here](https://home-prices-api.duckdns.org/upi/)**
+
 [![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-D71F00?style=for-the-badge&logo=python&logoColor=white)](https://www.sqlalchemy.org/)

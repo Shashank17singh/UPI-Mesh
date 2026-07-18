@@ -161,7 +161,7 @@ function log(msg) {
 
 async function refresh() {
     // Mesh state
-    const m = await fetch('/api/mesh/state').then(r => r.json());
+    const m = await fetch('api/mesh/state').then(r => r.json());
     const devicesDiv = document.getElementById('devices');
     devicesDiv.innerHTML = m.devices.map(d => `
         <div class="device ${d.hasInternet ? 'bridge' : 'offline'}">
@@ -177,14 +177,14 @@ async function refresh() {
         `Idempotency cache size: ${m.idempotencyCacheSize}`;
 
     // Accounts
-    const accs = await fetch('/api/accounts').then(r => r.json());
+    const accs = await fetch('api/accounts').then(r => r.json());
     document.querySelector('#accounts-table tbody').innerHTML = accs.map(a => `
         <tr><td>${a.vpa}</td><td>${a.holderName}</td>
             <td class="balance">₹${parseFloat(a.balance).toFixed(2)}</td></tr>
     `).join('');
 
     // Transactions
-    const txs = await fetch('/api/transactions').then(r => r.json());
+    const txs = await fetch('api/transactions').then(r => r.json());
     document.querySelector('#tx-table tbody').innerHTML = txs.map(t => `
         <tr>
             <td>${t.id}</td><td>${t.senderVpa}</td><td>${t.receiverVpa}</td>
@@ -205,7 +205,7 @@ async function sendPacket() {
         ttl: 5,
         startDevice: 'phone-alice'
     };
-    const r = await fetch('/api/demo/send', {
+    const r = await fetch('api/demo/send', {
         method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body)
     }).then(r => r.json());
@@ -215,13 +215,13 @@ async function sendPacket() {
 }
 
 async function gossip() {
-    const r = await fetch('/api/mesh/gossip', {method: 'POST'}).then(r => r.json());
+    const r = await fetch('api/mesh/gossip', {method: 'POST'}).then(r => r.json());
     log(`🔄 Gossip: ${r.transfers} transfer(s) — ${JSON.stringify(r.deviceCounts)}`);
     refresh();
 }
 
 async function flushBridges() {
-    const r = await fetch('/api/mesh/flush', {method: 'POST'}).then(r => r.json());
+    const r = await fetch('api/mesh/flush', {method: 'POST'}).then(r => r.json());
     log(`📡 ${r.uploadsAttempted} bridge upload(s):`);
     r.results.forEach(res => {
         log(`   ${res.bridgeNode} packet ${res.packetId} → ${res.outcome}` +
@@ -231,7 +231,7 @@ async function flushBridges() {
 }
 
 async function resetMesh() {
-    await fetch('/api/mesh/reset', {method: 'POST'});
+    await fetch('api/mesh/reset', {method: 'POST'});
     log('🗑 mesh + idempotency cache cleared');
     refresh();
 }

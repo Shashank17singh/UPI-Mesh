@@ -75,14 +75,14 @@
 </head>
 <body>
 <div class="container">
-    <h1>📡 UPI Offline Mesh — Live Demo</h1>
+    <h1>UPI Offline Mesh — Live Demo</h1>
     <p class="small">
         Send money in a basement with zero internet. Encrypted packets gossip from phone to phone
         until one with 4G reaches the backend.
     </p>
 
     <div class="controls">
-        <h3 style="margin-top:0">🎬 Demo Flow</h3>
+        <h3 style="margin-top:0">Demo Flow</h3>
 
         <div>
             <span class="step-num">1</span><strong>Compose payment</strong> (simulates sender phone)
@@ -101,33 +101,33 @@
             </select>
             ₹<input type="number" id="amount" value="500" style="width: 100px">
             PIN <input type="text" id="pin" value="1234" style="width: 80px" maxlength="4">
-            <button onclick="sendPacket()">📤 Inject into Mesh</button>
+            <button onclick="sendPacket()">Inject into Mesh</button>
         </div>
 
         <div style="margin-top: 16px">
             <span class="step-num">2</span><strong>Gossip</strong> — packets hop device-to-device
-            <button class="secondary" onclick="gossip()">🔄 Run Gossip Round</button>
+            <button class="secondary" onclick="gossip()">Run Gossip Round</button>
         </div>
 
         <div style="margin-top: 16px">
             <span class="step-num">3</span><strong>Bridge node walks outside, hits 4G</strong>
-            <button class="secondary" onclick="flushBridges()">📡 Bridges Upload to Backend</button>
+            <button class="secondary" onclick="flushBridges()">Bridges Upload to Backend</button>
             <span class="small">(parallel — exercises idempotency)</span>
         </div>
 
         <div style="margin-top: 16px">
-            <button class="danger" onclick="resetMesh()">🗑 Reset Mesh + Cache</button>
+            <button class="danger" onclick="resetMesh()">Reset Mesh + Cache</button>
         </div>
     </div>
 
     <div class="grid grid-2">
         <div class="card">
-            <h2>📱 Mesh Devices</h2>
+            <h2>Mesh Devices</h2>
             <div id="devices"></div>
         </div>
 
         <div class="card">
-            <h2>🏦 Account Balances</h2>
+            <h2>Account Balances</h2>
             <table id="accounts-table">
                 <thead><tr><th>VPA</th><th>Holder</th><th>Balance</th></tr></thead>
                 <tbody></tbody>
@@ -137,7 +137,7 @@
     </div>
 
     <div class="card" style="margin-top: 16px">
-        <h2>📜 Transaction Ledger</h2>
+        <h2>Transaction Ledger</h2>
         <table id="tx-table">
             <thead><tr>
                 <th>ID</th><th>From</th><th>To</th><th>Amount</th>
@@ -148,7 +148,7 @@
     </div>
 
     <div class="card" style="margin-top: 16px">
-        <h2>🪵 Activity Log</h2>
+        <h2>Activity Log</h2>
         <div id="log"></div>
     </div>
 </div>
@@ -167,7 +167,7 @@ async function refresh() {
         <div class="device ${d.hasInternet ? 'bridge' : 'offline'}">
             <strong>${d.deviceId}</strong>
             <span class="badge ${d.hasInternet ? 'badge-online' : 'badge-offline'}">
-                ${d.hasInternet ? '🌐 4G' : '🚫 OFFLINE'}
+                ${d.hasInternet ? '4G' : 'OFFLINE'}
             </span>
             <span class="small">holding ${d.packetCount} packet(s)</span>
             <div>${d.packetIds.map(id => `<span class="packet-id">${id}</span>`).join('')}</div>
@@ -209,20 +209,20 @@ async function sendPacket() {
         method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body)
     }).then(r => r.json());
-    log(`📤 Packet ${r.packetId.substring(0,8)} encrypted & injected at ${r.injectedAt} (TTL ${r.ttl})`);
+    log(`Packet ${r.packetId.substring(0,8)} encrypted & injected at ${r.injectedAt} (TTL ${r.ttl})`);
     log(`   ciphertext (truncated): ${r.ciphertextPreview}`);
     refresh();
 }
 
 async function gossip() {
     const r = await fetch('api/mesh/gossip', {method: 'POST'}).then(r => r.json());
-    log(`🔄 Gossip: ${r.transfers} transfer(s) — ${JSON.stringify(r.deviceCounts)}`);
+    log(`Gossip: ${r.transfers} transfer(s) — ${JSON.stringify(r.deviceCounts)}`);
     refresh();
 }
 
 async function flushBridges() {
     const r = await fetch('api/mesh/flush', {method: 'POST'}).then(r => r.json());
-    log(`📡 ${r.uploadsAttempted} bridge upload(s):`);
+    log(`${r.uploadsAttempted} bridge upload(s):`);
     r.results.forEach(res => {
         log(`   ${res.bridgeNode} packet ${res.packetId} → ${res.outcome}` +
             (res.reason ? ` (${res.reason})` : ''));
@@ -232,7 +232,7 @@ async function flushBridges() {
 
 async function resetMesh() {
     await fetch('api/mesh/reset', {method: 'POST'});
-    log('🗑 mesh + idempotency cache cleared');
+    log('mesh + idempotency cache cleared');
     refresh();
 }
 

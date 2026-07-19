@@ -35,6 +35,36 @@ UPI_Mesh simulates a UPI payment that has to survive **zero internet connectivit
 
 ---
 
+
+
+### 🕸️ Mesh Architecture
+
+`mermaid
+graph TD
+    subgraph "Offline Zone (Bluetooth Mesh)"
+    A[Sender Device] -->|Encrypted Payload| B((Relay Node 1))
+    A -->|Encrypted Payload| C((Relay Node 2))
+    B --> D((Relay Node 3))
+    C --> D
+    end
+    
+    subgraph "Internet Zone (Cloud)"
+    D -->|Internet Connection Found| E(Bridge to FastAPI)
+    E --> F{Idempotency Dedup}
+    F -->|Duplicate| G[Discard]
+    F -->|New Payload| H[Decrypt RSA/AES]
+    H --> I[(Settle Ledger)]
+    end
+    
+    classDef io fill:#f9f0ff,stroke:#8a2be2,stroke-width:2px,color:#000;
+    classDef core fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000;
+    classDef logic fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#000;
+    
+    class A,I io;
+    class B,C,D core;
+    class E,F,G,H logic;
+`
+
 ## 🛠️ Tech Stack
 
 **Backend** — Python · FastAPI · Uvicorn

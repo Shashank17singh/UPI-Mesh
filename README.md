@@ -39,7 +39,7 @@ UPI_Mesh simulates a UPI payment that has to survive **zero internet connectivit
 
 ### 🕸️ Mesh Architecture
 
-`mermaid
+```mermaid
 graph TD
     subgraph "Offline Zone (Bluetooth Mesh)"
     A[Sender Device] -->|Encrypted Payload| B((Relay Node 1))
@@ -63,7 +63,7 @@ graph TD
     class A,I io;
     class B,C,D core;
     class E,F,G,H logic;
-`
+```
 
 ## 🛠️ Tech Stack
 

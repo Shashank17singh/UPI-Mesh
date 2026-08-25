@@ -1,6 +1,6 @@
 <div align="center">
 
-# 📡 UPI_Mesh — Offline-First Payments over a Bluetooth Mesh
+#  UPI_Mesh — Offline-First Payments over a Bluetooth Mesh
 
 **A payment backend that settles UPI-style transactions with zero internet — hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard**
 
@@ -15,29 +15,29 @@
 
 ---
 
-## 📖 Overview
+##  Overview
 
 UPI_Mesh simulates a UPI payment that has to survive **zero internet connectivity**. A sender's phone encrypts a payment instruction and hands it to a mesh of nearby phones over Bluetooth. The packet hops phone-to-phone with no intermediate ever able to read or forge it, until one phone in the chain regains internet access ("bridge node") and uploads it to the backend — which decrypts, checks for replays and duplicates, and settles the ledger. All of it is served through a FastAPI backend with a live browser dashboard.
 
 ---
 
-## ✨ Pipeline
+##  Pipeline
 
 | Stage | What Happens |
 |---|---|
-| 🔐 **Encrypt** | The sender's phone wraps the payment in RSA-2048 (OAEP/SHA-256) + AES-256-GCM hybrid encryption before it ever leaves the device |
-| 🕸️ **Gossip** | Simulated phones relay the encrypted packet to each other over Bluetooth, decrementing a TTL each hop |
-| 🌉 **Bridge** | Once a phone with internet holds the packet, it uploads it to the backend as if it just got signal |
-| 🔁 **Dedup** | The ciphertext's SHA-256 hash — not the packet ID, which a relay could rewrite — is checked against an idempotency cache so duplicate deliveries settle only once |
-| ⏳ **Freshness Check** | Packets signed too long ago are rejected outright, closing the replay window |
-| 💰 **Settle** | The backend decrypts, then debits and credits accounts atomically with optimistic locking |
-| 📊 **Dashboard** | A live browser UI to send payments, run gossip rounds, flush bridges, and watch the ledger update |
+|  **Encrypt** | The sender's phone wraps the payment in RSA-2048 (OAEP/SHA-256) + AES-256-GCM hybrid encryption before it ever leaves the device |
+|  **Gossip** | Simulated phones relay the encrypted packet to each other over Bluetooth, decrementing a TTL each hop |
+|  **Bridge** | Once a phone with internet holds the packet, it uploads it to the backend as if it just got signal |
+|  **Dedup** | The ciphertext's SHA-256 hash — not the packet ID, which a relay could rewrite — is checked against an idempotency cache so duplicate deliveries settle only once |
+|  **Freshness Check** | Packets signed too long ago are rejected outright, closing the replay window |
+|  **Settle** | The backend decrypts, then debits and credits accounts atomically with optimistic locking |
+|  **Dashboard** | A live browser UI to send payments, run gossip rounds, flush bridges, and watch the ledger update |
 
 ---
 
 
 
-### 🕸️ Mesh Architecture
+###  Mesh Architecture
 
 ```mermaid
 graph TD
@@ -65,7 +65,7 @@ graph TD
     class E,F,G,H logic;
 ```
 
-## 🛠️ Tech Stack
+##  Tech Stack
 
 **Backend** — Python · FastAPI · Uvicorn
 **Data** — SQLAlchemy ORM · SQLite · Pydantic
@@ -75,7 +75,7 @@ graph TD
 
 ---
 
-## 📂 Directory Structure
+##  Directory Structure
 
 ```
 UPI_Mesh/
@@ -103,7 +103,7 @@ UPI_Mesh/
 
 ---
 
-## ⚙️ Setup and Installation
+##  Setup and Installation
 
 ### Prerequisites
 
@@ -135,7 +135,7 @@ Once the server is running, open `http://localhost:8080` in your browser. Compos
 
 ---
 
-## 📡 API Reference
+##  API Reference
 
 | Method | Endpoint | Description |
 |---|---|---|
@@ -159,7 +159,7 @@ curl -X POST http://localhost:8080/api/demo/send \
 
 ---
 
-## 🧪 Running the Tests
+##  Running the Tests
 
 ```bash
 pip install -r requirements-dev.txt
@@ -170,7 +170,7 @@ pytest -v
 
 ---
 
-## 🔬 Design Notes
+##  Design Notes
 
 - **Why hash the ciphertext, not the packet ID, for idempotency?** An intermediate phone can freely rewrite the outer `packet_id`; it cannot forge a ciphertext that decrypts to a different valid payload. Two delivered copies of the same encrypted packet always hash identically.
 - **Why optimistic locking on accounts?** The idempotency layer should always catch duplicates first, but a version column on `Account` means a race that somehow slips past it fails loudly (`StaleDataError`) instead of silently corrupting a balance.
@@ -178,6 +178,6 @@ pytest -v
 
 ---
 
-## 📜 License
+##  License
 
 MIT — see [LICENSE](LICENSE).

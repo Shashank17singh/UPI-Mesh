@@ -23,9 +23,10 @@ jobs:
           script: |
             if [ ! -d "/home/ubuntu/UPI_Mesh" ]; then
               cd /home/ubuntu
-              git clone https://github.com/Shashank17singh/UPI_Mesh.git
+              git clone https://github.com/Shashank17singh/UPI-Mesh.git UPI_Mesh
             fi
             
             cd /home/ubuntu/UPI_Mesh
-            git pull origin main
-            sudo docker compose up -d --build
+            git fetch origin main
+            git reset --hard origin/main
+            sudo docker compose up -d --build --force-recreate

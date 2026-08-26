@@ -1,8 +1,9 @@
 version: "3.8"
 
 services:
-  upi_mesh:
+  upi-mesh:
     build: .
     ports:
       - "5001:8000"
     restart: unless-stopped
+

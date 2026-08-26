@@ -1,6 +1,6 @@
 <div align="center">
 
-#  UPI_Mesh - Offline-First Payments over a Bluetooth Mesh
+#  UPI-Mesh - Offline-First Payments over a Bluetooth Mesh
 
 **A payment backend that settles UPI-style transactions with zero internet - hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard**
 
@@ -17,7 +17,7 @@
 
 ##  Overview
 
-UPI_Mesh simulates a UPI payment that has to survive **zero internet connectivity**. A sender's phone encrypts a payment instruction and hands it to a mesh of nearby phones over Bluetooth. The packet hops phone-to-phone with no intermediate ever able to read or forge it, until one phone in the chain regains internet access ("bridge node") and uploads it to the backend - which decrypts, checks for replays and duplicates, and settles the ledger. All of it is served through a FastAPI backend with a live browser dashboard.
+UPI-Mesh simulates a UPI payment that has to survive **zero internet connectivity**. A sender's phone encrypts a payment instruction and hands it to a mesh of nearby phones over Bluetooth. The packet hops phone-to-phone with no intermediate ever able to read or forge it, until one phone in the chain regains internet access ("bridge node") and uploads it to the backend - which decrypts, checks for replays and duplicates, and settles the ledger. All of it is served through a FastAPI backend with a live browser dashboard.
 
 ---
 
@@ -78,7 +78,7 @@ graph TD
 ##  Directory Structure
 
 ```
-UPI_Mesh/
+UPI-Mesh/
 │
 ├── app/
 │   ├── main.py                       # FastAPI app + routes
@@ -113,8 +113,8 @@ UPI_Mesh/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Shashank17singh/UPI_Mesh.git
-cd UPI_Mesh
+git clone https://github.com/Shashank17singh/UPI-Mesh.git
+cd UPI-Mesh
 ```
 
 ### 2. Install dependencies
@@ -181,3 +181,4 @@ pytest -v
 ##  License
 
 MIT - see [LICENSE](LICENSE).
+

@@ -87,10 +87,21 @@
         <div>
             <span class="step-num">1</span><strong>Compose payment</strong> (simulates sender phone)
             <br>
+            <div style="margin: 8px 0;">
+                Inject at:
+                <select id="startDevice">
+                    <option value="phone-alice">phone-alice</option>
+                    <option value="phone-stranger1">phone-stranger1</option>
+                    <option value="phone-stranger2">phone-stranger2</option>
+                    <option value="phone-stranger3">phone-stranger3</option>
+                    <option value="phone-bridge">phone-bridge</option>
+                </select>
+            </div>
             <select id="senderVpa">
                 <option>alice@demo</option>
                 <option>bob@demo</option>
                 <option>carol@demo</option>
+                <option>dave@demo</option>
             </select>
             →
             <select id="receiverVpa">
@@ -203,7 +214,7 @@ async function sendPacket() {
         amount: parseFloat(document.getElementById('amount').value),
         pin: document.getElementById('pin').value,
         ttl: 5,
-        start_device: 'phone-alice'
+        start_device: document.getElementById('startDevice').value
     };
     const r = await fetch('/api/demo/send', {
         method: 'POST', headers: {'Content-Type': 'application/json'},

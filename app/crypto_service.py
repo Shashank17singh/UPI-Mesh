@@ -1,5 +1,5 @@
 """
-Hybrid encryption — the same pattern used by TLS, PGP, Signal, etc.
+Hybrid encryption - the same pattern used by TLS, PGP, Signal, etc.
 
 Why hybrid? RSA can only encrypt small data (~245 bytes for a 2048-bit key).
 Our payment instruction (JSON) might be ~300 bytes, and in real use we might
@@ -100,7 +100,7 @@ class HybridCryptoService:
 
     def decrypt(self, base64_ciphertext: str) -> PaymentInstruction:
         """Decrypt with the server's private key. If anything has been
-        tampered with — wrong key, modified ciphertext, truncated input —
+        tampered with - wrong key, modified ciphertext, truncated input -
         this raises."""
         all_bytes = base64.b64decode(base64_ciphertext)
 

@@ -1,17 +1,17 @@
 """
 In-memory idempotency cache. In production this would be Redis with
-SETNX + TTL — exactly the same semantics, just distributed across
+SETNX + TTL - exactly the same semantics, just distributed across
 instances.
 
 The contract:
   - claim(hash) returns True on first call, False on every call after
     that (within the TTL window)
-  - the operation is atomic — even if 100 threads call claim(hash) at the
+  - the operation is atomic - even if 100 threads call claim(hash) at the
     same instant, exactly one returns True
 
 This is what kills the "three bridges deliver simultaneously" problem.
 A plain dict + threading.Lock is the process-local equivalent of Redis
-SETNX — the lock makes the check-then-set atomic, so exactly one caller
+SETNX - the lock makes the check-then-set atomic, so exactly one caller
 ever wins the race for a given hash.
 """
 

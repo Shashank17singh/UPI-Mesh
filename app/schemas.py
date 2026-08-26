@@ -39,7 +39,7 @@ class MeshPacket(BaseModel):
 
     Intermediate phones can read the OUTER fields (packet_id, ttl,
     created_at) because they need them for routing and dedup. They CANNOT
-    read `ciphertext` — that's encrypted with the server's public key.
+    read `ciphertext` - that's encrypted with the server's public key.
 
     NOTE on outer-field tampering: a malicious intermediate could change
     packet_id or created_at. That's why we use the ciphertext's hash (not

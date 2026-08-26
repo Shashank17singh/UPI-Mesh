@@ -1,8 +1,8 @@
 <div align="center">
 
-#  UPI_Mesh — Offline-First Payments over a Bluetooth Mesh
+#  UPI_Mesh - Offline-First Payments over a Bluetooth Mesh
 
-**A payment backend that settles UPI-style transactions with zero internet — hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard**
+**A payment backend that settles UPI-style transactions with zero internet - hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard**
 
 
 
@@ -17,7 +17,7 @@
 
 ##  Overview
 
-UPI_Mesh simulates a UPI payment that has to survive **zero internet connectivity**. A sender's phone encrypts a payment instruction and hands it to a mesh of nearby phones over Bluetooth. The packet hops phone-to-phone with no intermediate ever able to read or forge it, until one phone in the chain regains internet access ("bridge node") and uploads it to the backend — which decrypts, checks for replays and duplicates, and settles the ledger. All of it is served through a FastAPI backend with a live browser dashboard.
+UPI_Mesh simulates a UPI payment that has to survive **zero internet connectivity**. A sender's phone encrypts a payment instruction and hands it to a mesh of nearby phones over Bluetooth. The packet hops phone-to-phone with no intermediate ever able to read or forge it, until one phone in the chain regains internet access ("bridge node") and uploads it to the backend - which decrypts, checks for replays and duplicates, and settles the ledger. All of it is served through a FastAPI backend with a live browser dashboard.
 
 ---
 
@@ -28,7 +28,7 @@ UPI_Mesh simulates a UPI payment that has to survive **zero internet connectivit
 |  **Encrypt** | The sender's phone wraps the payment in RSA-2048 (OAEP/SHA-256) + AES-256-GCM hybrid encryption before it ever leaves the device |
 |  **Gossip** | Simulated phones relay the encrypted packet to each other over Bluetooth, decrementing a TTL each hop |
 |  **Bridge** | Once a phone with internet holds the packet, it uploads it to the backend as if it just got signal |
-|  **Dedup** | The ciphertext's SHA-256 hash — not the packet ID, which a relay could rewrite — is checked against an idempotency cache so duplicate deliveries settle only once |
+|  **Dedup** | The ciphertext's SHA-256 hash - not the packet ID, which a relay could rewrite - is checked against an idempotency cache so duplicate deliveries settle only once |
 |  **Freshness Check** | Packets signed too long ago are rejected outright, closing the replay window |
 |  **Settle** | The backend decrypts, then debits and credits accounts atomically with optimistic locking |
 |  **Dashboard** | A live browser UI to send payments, run gossip rounds, flush bridges, and watch the ledger update |
@@ -67,11 +67,11 @@ graph TD
 
 ##  Tech Stack
 
-**Backend** — Python · FastAPI · Uvicorn
-**Data** — SQLAlchemy ORM · SQLite · Pydantic
-**Security** — `cryptography` (RSA-OAEP + AES-256-GCM)
-**Frontend** — HTML · CSS · JavaScript (served via Jinja2)
-**Testing** — pytest · GitHub Actions CI
+**Backend** - Python · FastAPI · Uvicorn
+**Data** - SQLAlchemy ORM · SQLite · Pydantic
+**Security** - `cryptography` (RSA-OAEP + AES-256-GCM)
+**Frontend** - HTML · CSS · JavaScript (served via Jinja2)
+**Testing** - pytest · GitHub Actions CI
 
 ---
 
@@ -145,7 +145,7 @@ Once the server is running, open `http://localhost:8080` in your browser. Compos
 | `POST` | `/api/mesh/gossip` | Run one round of phone-to-phone packet exchange |
 | `POST` | `/api/mesh/flush` | Bridge nodes upload everything they hold (parallelized, to exercise idempotency under concurrency) |
 | `POST` | `/api/mesh/reset` | Clear the mesh and idempotency cache |
-| `POST` | `/api/bridge/ingest` | The production endpoint — headers `X-Bridge-Node-Id`, `X-Hop-Count` |
+| `POST` | `/api/bridge/ingest` | The production endpoint - headers `X-Bridge-Node-Id`, `X-Hop-Count` |
 | `GET` | `/api/accounts` | List demo accounts and balances |
 | `GET` | `/api/transactions` | Last 20 settled/rejected transactions |
 
@@ -174,10 +174,10 @@ pytest -v
 
 - **Why hash the ciphertext, not the packet ID, for idempotency?** An intermediate phone can freely rewrite the outer `packet_id`; it cannot forge a ciphertext that decrypts to a different valid payload. Two delivered copies of the same encrypted packet always hash identically.
 - **Why optimistic locking on accounts?** The idempotency layer should always catch duplicates first, but a version column on `Account` means a race that somehow slips past it fails loudly (`StaleDataError`) instead of silently corrupting a balance.
-- **SQLite gotcha:** autoincrement primary keys on SQLite only work with a plain `Integer` column — a `BigInteger` primary key silently stays `NULL` on insert.
+- **SQLite gotcha:** autoincrement primary keys on SQLite only work with a plain `Integer` column - a `BigInteger` primary key silently stays `NULL` on insert.
 
 ---
 
 ##  License
 
-MIT — see [LICENSE](LICENSE).
+MIT - see [LICENSE](LICENSE).

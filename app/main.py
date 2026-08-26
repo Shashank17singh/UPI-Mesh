@@ -1,5 +1,5 @@
 """
-FastAPI application entrypoint — wires up the singleton services and
+FastAPI application entrypoint - wires up the singleton services and
 exposes the HTTP routes.
 
 Endpoint groups:
@@ -39,7 +39,7 @@ logging.basicConfig(
 )
 
 # ----------------------------------------------------------------------
-# Singleton services — constructed once at import time and shared across
+# Singleton services - constructed once at import time and shared across
 # requests, since none of them hold per-request state.
 # ----------------------------------------------------------------------
 IDEMPOTENCY_TTL_SECONDS = 86400
@@ -57,7 +57,7 @@ _bridge_upload_pool = ThreadPoolExecutor(max_workers=8)
 
 
 def _eviction_loop():
-    """Background housekeeping thread — periodically evicts idempotency
+    """Background housekeeping thread - periodically evicts idempotency
     entries past their TTL so the cache doesn't grow forever."""
     while True:
         time.sleep(60)
@@ -78,7 +78,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="UPI Offline Mesh — Demo", lifespan=lifespan)
+app = FastAPI(title="UPI Offline Mesh - Demo", lifespan=lifespan)
 templates = Jinja2Templates(directory="app/templates")
 
 

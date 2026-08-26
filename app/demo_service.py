@@ -50,8 +50,8 @@ class DemoService:
             receiver_vpa=receiver_vpa,
             amount=amount,
             pin_hash=self._sha256_hex(pin),
-            nonce=str(uuid.uuid4()),           # nonce — guarantees uniqueness
-            signed_at=int(time.time() * 1000),  # signed_at — for freshness check
+            nonce=str(uuid.uuid4()),           # nonce - guarantees uniqueness
+            signed_at=int(time.time() * 1000),  # signed_at - for freshness check
         )
 
         ciphertext = self.crypto.encrypt(instruction)

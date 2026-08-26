@@ -2,7 +2,7 @@
 Where the actual ledger update happens. Wrapped in a DB transaction so
 either BOTH the debit and credit happen, or neither does.
 
-Account.version gives us optimistic locking — if two threads somehow get
+Account.version gives us optimistic locking - if two threads somehow get
 past idempotency and both try to debit the same account, the second one's
 commit will raise StaleDataError rather than corrupting the balance. (In a
 demo the idempotency layer should always catch this first, but defense in

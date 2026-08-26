@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>UPI Offline Mesh — Demo</title>
+    <title>UPI Offline Mesh - Demo</title>
     <style>
         * { box-sizing: border-box; }
         body {
@@ -75,7 +75,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>UPI Offline Mesh — Live Demo</h1>
+    <h1>UPI Offline Mesh - Live Demo</h1>
     <p class="small">
         Send money in a basement with zero internet. Encrypted packets gossip from phone to phone
         until one with 4G reaches the backend.
@@ -105,14 +105,14 @@
         </div>
 
         <div style="margin-top: 16px">
-            <span class="step-num">2</span><strong>Gossip</strong> — packets hop device-to-device
+            <span class="step-num">2</span><strong>Gossip</strong> - packets hop device-to-device
             <button class="secondary" onclick="gossip()">Run Gossip Round</button>
         </div>
 
         <div style="margin-top: 16px">
             <span class="step-num">3</span><strong>Bridge node walks outside, hits 4G</strong>
             <button class="secondary" onclick="flushBridges()">Bridges Upload to Backend</button>
-            <span class="small">(parallel — exercises idempotency)</span>
+            <span class="small">(parallel - exercises idempotency)</span>
         </div>
 
         <div style="margin-top: 16px">
@@ -216,7 +216,7 @@ async function sendPacket() {
 
 async function gossip() {
     const r = await fetch('api/mesh/gossip', {method: 'POST'}).then(r => r.json());
-    log(`Gossip: ${r.transfers} transfer(s) — ${JSON.stringify(r.deviceCounts)}`);
+    log(`Gossip: ${r.transfers} transfer(s) - ${JSON.stringify(r.deviceCounts)}`);
     refresh();
 }
 

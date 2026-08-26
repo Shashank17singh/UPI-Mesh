@@ -78,7 +78,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="UPI Offline Mesh - Demo", lifespan=lifespan)
+app = FastAPI(title="UPI-Mesh - Demo", lifespan=lifespan)
 templates = Jinja2Templates(directory="app/templates")
 
 

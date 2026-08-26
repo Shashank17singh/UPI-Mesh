@@ -110,7 +110,7 @@ def demo_send(req: DemoSendRequest):
         req.sender_vpa, req.receiver_vpa, req.amount, req.pin, req.ttl or 5
     )
 
-    start_device = req.start_device or "phone-alice"
+    start_device = req.start_device or "phone-sender"
     mesh.inject(start_device, packet)
 
     return {

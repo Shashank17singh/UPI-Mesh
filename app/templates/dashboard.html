@@ -198,12 +198,12 @@ async function refresh() {
 
 async function sendPacket() {
     const body = {
-        senderVpa: document.getElementById('senderVpa').value,
-        receiverVpa: document.getElementById('receiverVpa').value,
+        sender_vpa: document.getElementById('senderVpa').value,
+        receiver_vpa: document.getElementById('receiverVpa').value,
         amount: parseFloat(document.getElementById('amount').value),
         pin: document.getElementById('pin').value,
         ttl: 5,
-        startDevice: 'phone-alice'
+        start_device: 'phone-alice'
     };
     const r = await fetch('/api/demo/send', {
         method: 'POST', headers: {'Content-Type': 'application/json'},

@@ -29,4 +29,5 @@ jobs:
             cd /home/ubuntu/UPI_Mesh
             git fetch origin main
             git reset --hard origin/main
-            sudo docker compose up -d --build --force-recreate
+            sudo docker compose down --remove-orphans
+            sudo docker compose up -d --build

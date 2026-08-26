@@ -33,7 +33,7 @@ def test_encrypt_decrypt_round_trip(crypto):
 
 def test_same_payload_encrypted_twice_has_different_ciphertext(crypto):
     """Fresh IV + fresh AES key per call means identical plaintext should
-    never produce identical ciphertext — this is what makes the
+    never produce identical ciphertext - this is what makes the
     ciphertext hash a safe idempotency key."""
     instruction = _sample_instruction()
     c1 = crypto.encrypt(instruction)

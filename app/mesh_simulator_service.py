@@ -7,7 +7,7 @@ and copies packets between them, decrementing TTL each hop.
 
 When a device with internet (a "bridge node") holds a packet, the demo's
 /api/mesh/flush endpoint causes it to actually POST that packet to our
-backend — simulating the moment a phone walks outside and gets 4G.
+backend - simulating the moment a phone walks outside and gets 4G.
 """
 
 import logging
@@ -99,7 +99,7 @@ class MeshSimulatorService:
         return {d.device_id: d.packet_count() for d in self.devices.values()}
 
     def collect_bridge_uploads(self) -> list[BridgeUpload]:
-        """Returns all packets held by devices with internet — these are
+        """Returns all packets held by devices with internet - these are
         what would be uploaded to the backend the moment they reach
         connectivity."""
         out: list[BridgeUpload] = []

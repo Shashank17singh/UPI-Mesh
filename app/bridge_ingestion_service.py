@@ -7,7 +7,7 @@ bridge node.
      - If already claimed: this is a duplicate. Drop it.
   3. Decrypt the ciphertext with the server's private key.
      - If decryption fails: tampered or junk. Reject.
-  4. Check freshness — reject if signed_at is too old (replay protection).
+  4. Check freshness - reject if signed_at is too old (replay protection).
   5. Hand off to SettlementService for the actual debit/credit.
 """
 
@@ -65,7 +65,7 @@ class BridgeIngestionService:
 
             # ---- Idempotency gate ----
             if not self.idempotency.claim(packet_hash):
-                log.info("DUPLICATE packet %s... from bridge %s — dropped", packet_hash[:12], bridge_node_id)
+                log.info("DUPLICATE packet %s... from bridge %s - dropped", packet_hash[:12], bridge_node_id)
                 return IngestResult.duplicate(packet_hash)
 
             # ---- Decrypt ----

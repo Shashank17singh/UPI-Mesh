@@ -18,7 +18,7 @@ class Account(Base):
     holder_name = Column(String, nullable=False)
     balance = Column(Numeric(19, 2), nullable=False)
 
-    # SQLAlchemy's version_id_col gives us optimistic locking — a
+    # SQLAlchemy's version_id_col gives us optimistic locking - a
     # concurrent update to a stale row raises StaleDataError instead of
     # silently corrupting the balance.
     version = Column(Integer, nullable=False, default=0)
@@ -33,13 +33,13 @@ class TransactionStatus(str, enum.Enum):
 
 class Transaction(Base):
     """Permanent record of every settled transaction. Once written, never
-    modified. packet_hash is the idempotency key — uniqueness is enforced
+    modified. packet_hash is the idempotency key - uniqueness is enforced
     at the DB level as a defense-in-depth fallback if the in-memory
     idempotency cache ever fails."""
 
     __tablename__ = "transactions"
 
-    # Plain Integer (not BigInteger) — on SQLite, only an INTEGER PRIMARY KEY
+    # Plain Integer (not BigInteger) - on SQLite, only an INTEGER PRIMARY KEY
     # is treated as an alias for the internal rowid and gets autoincrement
     # for free. A BigInteger column silently stays NULL on insert instead.
     id = Column(Integer, primary_key=True, autoincrement=True)

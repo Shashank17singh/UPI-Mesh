@@ -39,7 +39,7 @@ class MeshSimulatorService:
 
     def _seed_default_devices(self) -> None:
         # Default scenario: 4 offline phones in a basement, 1 phone outside with Internet
-        for device_id in ("phone-alice", "phone-stranger1", "phone-stranger2", "phone-stranger3"):
+        for device_id in ("phone-sender", "phone-stranger1", "phone-stranger2", "phone-stranger3"):
             self.devices[device_id] = VirtualDevice(device_id, has_internet=False)
         self.devices["phone-bridge"] = VirtualDevice("phone-bridge", has_internet=True)
 

@@ -17,8 +17,8 @@ def test_default_devices_seeded():
 
 def test_inject_places_packet_on_device():
     mesh = MeshSimulatorService()
-    mesh.inject("phone-alice", _packet())
-    assert mesh.get_device("phone-alice").packet_count() == 1
+    mesh.inject("phone-sender", _packet())
+    assert mesh.get_device("phone-sender").packet_count() == 1
 
 
 def test_inject_unknown_device_raises():
@@ -32,7 +32,7 @@ def test_inject_unknown_device_raises():
 
 def test_gossip_spreads_packet_to_all_devices():
     mesh = MeshSimulatorService()
-    mesh.inject("phone-alice", _packet(ttl=5))
+    mesh.inject("phone-sender", _packet(ttl=5))
     mesh.gossip_once()
     counts = mesh.snapshot_map()
     assert all(count == 1 for count in counts.values())
@@ -40,7 +40,7 @@ def test_gossip_spreads_packet_to_all_devices():
 
 def test_gossip_decrements_ttl_and_stops_at_zero():
     mesh = MeshSimulatorService()
-    mesh.inject("phone-alice", _packet(ttl=1))
+    mesh.inject("phone-sender", _packet(ttl=1))
     result = mesh.gossip_once()
     assert result.transfers == 4  # spreads to the other 4 devices once
     # TTL is now 0 everywhere, so a second round should transfer nothing new.
@@ -50,7 +50,7 @@ def test_gossip_decrements_ttl_and_stops_at_zero():
 
 def test_bridge_upload_only_collects_from_internet_devices():
     mesh = MeshSimulatorService()
-    mesh.inject("phone-alice", _packet())
+    mesh.inject("phone-sender", _packet())
     mesh.gossip_once()
     uploads = mesh.collect_bridge_uploads()
     assert len(uploads) == 1
@@ -59,6 +59,6 @@ def test_bridge_upload_only_collects_from_internet_devices():
 
 def test_reset_clears_all_devices():
     mesh = MeshSimulatorService()
-    mesh.inject("phone-alice", _packet())
+    mesh.inject("phone-sender", _packet())
     mesh.reset_mesh()
     assert all(count == 0 for count in mesh.snapshot_map().values())

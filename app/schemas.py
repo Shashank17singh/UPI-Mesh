@@ -60,4 +60,4 @@ class DemoSendRequest(BaseModel):
     amount: float
     pin: str
     ttl: Optional[int] = 5
-    start_device: Optional[str] = "phone-alice"
+    start_device: Optional[str] = "phone-sender"

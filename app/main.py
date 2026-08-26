@@ -147,7 +147,7 @@ def mesh_gossip():
 
 @app.post("/api/mesh/flush")
 def mesh_flush():
-    """"All bridge nodes simultaneously walk outside and get 4G." They
+    """"All bridge nodes simultaneously walk outside and connect to the Internet." They
     all upload everything they hold to /api/bridge/ingest.
 
     THIS is the moment the duplicate-storm idempotency case is tested: if

@@ -78,7 +78,7 @@
     <h1>UPI-Mesh - Live Demo</h1>
     <p class="small">
         Send money in a basement with zero internet. Encrypted packets gossip from phone to phone
-        until one with 4G reaches the backend.
+        until one with Internet reaches the backend.
     </p>
 
     <div class="controls">
@@ -110,7 +110,7 @@
         </div>
 
         <div style="margin-top: 16px">
-            <span class="step-num">3</span><strong>Bridge node walks outside, hits 4G</strong>
+            <span class="step-num">3</span><strong>Bridge node walks outside, connects to Internet</strong>
             <button class="secondary" onclick="flushBridges()">Bridges Upload to Backend</button>
             <span class="small">(parallel - exercises idempotency)</span>
         </div>
@@ -167,7 +167,7 @@ async function refresh() {
         <div class="device ${d.hasInternet ? 'bridge' : 'offline'}">
             <strong>${d.deviceId}</strong>
             <span class="badge ${d.hasInternet ? 'badge-online' : 'badge-offline'}">
-                ${d.hasInternet ? '4G' : 'OFFLINE'}
+                ${d.hasInternet ? 'ONLINE' : 'OFFLINE'}
             </span>
             <span class="small">holding ${d.packetCount} packet(s)</span>
             <div>${d.packetIds.map(id => `<span class="packet-id">${id}</span>`).join('')}</div>

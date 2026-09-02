@@ -20,8 +20,8 @@ def db_session():
     session = SessionLocal()
 
     session.add_all([
-        Account(vpa="alice@demo", holder_name="Alice", balance=Decimal("5000.00")),
-        Account(vpa="bob@demo", holder_name="Bob", balance=Decimal("1000.00")),
+        Account(vpa="alice@demo", holder_name="Alice", pin_hash="deadbeef", balance=Decimal("5000.00")),
+        Account(vpa="bob@demo", holder_name="Bob", pin_hash="deadbeef", balance=Decimal("1000.00")),
     ])
     session.commit()
 

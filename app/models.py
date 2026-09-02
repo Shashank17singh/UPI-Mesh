@@ -16,6 +16,7 @@ class Account(Base):
 
     vpa = Column(String, primary_key=True)  # Virtual Payment Address, e.g. "alice@demo"
     holder_name = Column(String, nullable=False)
+    pin_hash = Column(String, nullable=False, default="deadbeef") # In production, no default!
     balance = Column(Numeric(19, 2), nullable=False)
 
     # SQLAlchemy's version_id_col gives us optimistic locking - a

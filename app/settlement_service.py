@@ -34,6 +34,9 @@ class SettlementService:
         sender = db.get(Account, instruction.sender_vpa)
         if sender is None:
             raise ValueError(f"Unknown sender VPA: {instruction.sender_vpa}")
+            
+        if instruction.pin_hash != sender.pin_hash:
+            raise ValueError(f"Invalid PIN for account {instruction.sender_vpa}")
 
         receiver = db.get(Account, instruction.receiver_vpa)
         if receiver is None:

@@ -24,11 +24,12 @@ class DemoService:
 
     def seed_accounts(self, db: Session) -> None:
         if db.query(Account).count() == 0:
+            default_pin_hash = self._sha256_hex("1234")
             db.add_all([
-                Account(vpa="alice@demo", holder_name="Alice", balance=Decimal("5000.00")),
-                Account(vpa="bob@demo", holder_name="Bob", balance=Decimal("1000.00")),
-                Account(vpa="carol@demo", holder_name="Carol", balance=Decimal("2500.00")),
-                Account(vpa="dave@demo", holder_name="Dave", balance=Decimal("500.00")),
+                Account(vpa="alice@demo", holder_name="Alice", pin_hash=default_pin_hash, balance=Decimal("5000.00")),
+                Account(vpa="bob@demo", holder_name="Bob", pin_hash=default_pin_hash, balance=Decimal("1000.00")),
+                Account(vpa="carol@demo", holder_name="Carol", pin_hash=default_pin_hash, balance=Decimal("2500.00")),
+                Account(vpa="dave@demo", holder_name="Dave", pin_hash=default_pin_hash, balance=Decimal("500.00")),
             ])
             db.commit()
             log.info("Seeded 4 demo accounts")

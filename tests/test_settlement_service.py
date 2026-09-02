@@ -69,3 +69,17 @@ def test_unique_packet_hash_enforced_at_db_level(db_session):
 
     existing = db_session.query(Transaction).filter_by(packet_hash="same-hash").count()
     assert existing == 1
+
+def test_settle_rejects_invalid_pin(db_session):
+    svc = SettlementService()
+    inst = _instruction(100)
+    inst.pin_hash = "wronghash"
+    
+    try:
+        svc.settle(db_session, inst, "phash-3", "bridge-3", 1)
+        assert False, "Should have rejected transaction for invalid PIN"
+    except ValueError as e:
+        assert "Invalid PIN" in str(e)
+    
+    alice = db_session.query(Account).filter_by(vpa="alice@demo").first()
+    assert alice.balance == Decimal("5000.00") # Balance must be untouched

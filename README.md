@@ -95,7 +95,7 @@ UPI-Mesh/
 │   └── templates/dashboard.html      # Live dashboard UI
 │
 ├── tests/                            # pytest suite (27 tests)
-├── .github/workflows/ci.yml          # CI across Python 3.10–3.12
+├── .github/workflows/ci.yml          # CI across Python 3.10-3.12
 ├── requirements.txt
 ├── requirements-dev.txt
 └── README.md                         # You are here

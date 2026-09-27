@@ -1,6 +1,6 @@
 <div align="center">
 
-#  UPI-Mesh - Offline-First Payments over a Bluetooth Mesh
+# UPI-Mesh - Offline-First Payments over a Bluetooth Mesh
 
 **A payment backend that settles UPI-style transactions with zero internet - hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard**
 
@@ -182,3 +182,10 @@ pytest -v
 
 MIT - see [LICENSE](LICENSE).
 
+
+
+---
+
+## Deployment
+- **API URL:** https://upi-mesh.duckdns.org/docs
+- **Dashboard URL:** https://upi-mesh.duckdns.org/

@@ -3,8 +3,10 @@ Pydantic models for the wire format: the payment instruction itself, the
 encrypted mesh packet that carries it, and the small request DTOs used by
 the demo endpoints.
 """
-from typing import Optional
+
 from pydantic import BaseModel, Field
+
+
 class PaymentInstruction(BaseModel):
     """The actual payment instruction. After the server decrypts
     MeshPacket.ciphertext, it gets one of these.
@@ -20,12 +22,15 @@ class PaymentInstruction(BaseModel):
         it against a hash held by the bank. Here we just record it for
         realism.
     """
+
     sender_vpa: str
     receiver_vpa: str
     amount: float
     pin_hash: str
     nonce: str
     signed_at: int
+
+
 class MeshPacket(BaseModel):
     """The over-the-wire format. This is what hops from phone to phone via
     Bluetooth.
@@ -38,14 +43,17 @@ class MeshPacket(BaseModel):
     authenticated by hybrid encryption, so any tampering inside the
     encrypted blob is detected on decryption.
     """
+
     packet_id: str
     ttl: int = Field(ge=0)
     created_at: int
     ciphertext: str
+
+
 class DemoSendRequest(BaseModel):
     sender_vpa: str
     receiver_vpa: str
     amount: float
     pin: str
-    ttl: Optional[int] = 5
-    start_device: Optional[str] = "phone-sender"
+    ttl: int | None = 5
+    start_device: str | None = "phone-sender"

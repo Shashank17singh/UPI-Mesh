@@ -32,8 +32,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(threadName)s] %(levelname)-5s %(name)s - %(message)s",
 )
-# ----------------------------------------------------------------------
-# ----------------------------------------------------------------------
+
 IDEMPOTENCY_TTL_SECONDS = 86400
 PACKET_MAX_AGE_SECONDS = 86400
 server_key = ServerKeyHolder()
@@ -67,12 +66,12 @@ async def lifespan(app: FastAPI):
     yield
 app = FastAPI(title="UPI-Mesh - Demo", lifespan=lifespan)
 templates = Jinja2Templates(directory="app/templates")
-# ------------------------------------------------------------------ dashboard
+
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     """Renders the dashboard template."""
     return templates.TemplateResponse("dashboard.html", {"request": request})
-# ------------------------------------------------------------------ key
+
 @app.get("/api/server-key")
 def get_server_public_key():
     """Returns the server's public key so simulated senders can fetch it."""
@@ -81,7 +80,7 @@ def get_server_public_key():
         "algorithm": "RSA-2048 / OAEP-SHA256",
         "hybridScheme": "RSA-OAEP encrypts an AES-256-GCM session key",
     }
-# ---------------------------------------------------------------- demo
+
 @app.post("/api/demo/send")
 def demo_send(req: DemoSendRequest):
     """Demo helper: build a packet on the server (simulating a sender
@@ -97,7 +96,7 @@ def demo_send(req: DemoSendRequest):
         "ttl": packet.ttl,
         "injectedAt": start_device,
     }
-# -------------------------------------------------------------- mesh sim
+
 @app.get("/api/mesh/state")
 def mesh_state():
     """Returns the current state of devices in the mesh simulation."""
@@ -151,7 +150,7 @@ def mesh_reset():
     mesh.reset_mesh()
     idempotency.clear()
     return {"status": "mesh and idempotency cache cleared"}
-# -------------------------------------------------------------- bridge
+
 @app.post("/api/bridge/ingest")
 def ingest(
     packet: MeshPacket,
@@ -164,7 +163,7 @@ def ingest(
     holding mesh packets."""
     r = bridge.ingest(db, packet, x_bridge_node_id, x_hop_count)
     return r
-# ------------------------------------------------------------- accounts
+
 @app.get("/api/accounts")
 def list_accounts(db: Session = Depends(get_db)):
     """Returns a list of all accounts for the dashboard view."""

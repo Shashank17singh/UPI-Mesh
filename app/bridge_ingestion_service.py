@@ -51,7 +51,7 @@ class BridgeIngestionService:
     ) -> IngestResult:
         try:
             packet_hash = self.crypto.hash_ciphertext(packet.ciphertext)
-            # ---- Idempotency gate ----
+
             if not self.idempotency.claim(packet_hash):
                 log.info(
                     "DUPLICATE packet %s... from bridge %s - dropped",
@@ -59,7 +59,7 @@ class BridgeIngestionService:
                     bridge_node_id,
                 )
                 return IngestResult.duplicate(packet_hash)
-            # ---- Decrypt ----
+
             try:
                 instruction = self.crypto.decrypt(packet.ciphertext)
             except Exception as e:
@@ -67,7 +67,7 @@ class BridgeIngestionService:
                     "Decryption failed for packet %s...: %s", packet_hash[:12], e
                 )
                 return IngestResult.invalid(packet_hash, "decryption_failed")
-            # ---- Freshness check (replay protection) ----
+
             age_seconds = (time.time() * 1000 - instruction.signed_at) / 1000
             if age_seconds > self.max_age_seconds:
                 log.warning(
@@ -78,7 +78,7 @@ class BridgeIngestionService:
                 return IngestResult.invalid(packet_hash, "stale_packet")
             if age_seconds < -300:
                 return IngestResult.invalid(packet_hash, "future_dated")
-            # ---- Settle ----
+
             tx = self.settlement.settle(
                 db, instruction, packet_hash, bridge_node_id, hop_count
             )

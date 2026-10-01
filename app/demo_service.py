@@ -2,19 +2,26 @@
 Helper service that seeds demo accounts on startup and simulates the
 "sender phone creates an encrypted packet" flow.
 """
+
 import hashlib
 import logging
 import time
 import uuid
 from decimal import Decimal
+
 from sqlalchemy.orm import Session
+
 from app.crypto_service import HybridCryptoService
 from app.models import Account
 from app.schemas import MeshPacket, PaymentInstruction
+
 log = logging.getLogger("upimesh.demo")
+
+
 class DemoService:
     def __init__(self, crypto: HybridCryptoService):
         self.crypto = crypto
+
     def seed_accounts(self, db: Session) -> None:
         if db.query(Account).count() == 0:
             default_pin_hash = self._sha256_hex("1234")
@@ -48,6 +55,7 @@ class DemoService:
             )
             db.commit()
             log.info("Seeded 4 demo accounts")
+
     def create_packet(
         self, sender_vpa: str, receiver_vpa: str, amount: float, pin: str, ttl: int
     ) -> MeshPacket:
@@ -74,6 +82,7 @@ class DemoService:
             created_at=int(time.time() * 1000),
             ciphertext=ciphertext,
         )
+
     @staticmethod
     def _sha256_hex(text: str) -> str:
         return hashlib.sha256(text.encode()).hexdigest()

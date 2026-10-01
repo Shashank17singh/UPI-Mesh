@@ -10,15 +10,18 @@ Endpoint groups:
   /api/accounts          -> for the dashboard
   /api/transactions      -> for the dashboard
 """
+
 import logging
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
+
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
+
 from app.bridge_ingestion_service import BridgeIngestionService
 from app.crypto_service import HybridCryptoService, ServerKeyHolder
 from app.database import Base, SessionLocal, engine, get_db
@@ -28,6 +31,7 @@ from app.mesh_simulator_service import MeshSimulatorService
 from app.models import Account, Transaction
 from app.schemas import DemoSendRequest, MeshPacket
 from app.settlement_service import SettlementService
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(threadName)s] %(levelname)-5s %(name)s - %(message)s",
@@ -45,12 +49,16 @@ bridge = BridgeIngestionService(
 )
 demo = DemoService(crypto)
 _bridge_upload_pool = ThreadPoolExecutor(max_workers=8)
+
+
 def _eviction_loop():
     """Background housekeeping thread - periodically evicts idempotency
     entries past their TTL so the cache doesn't grow forever."""
     while True:
         time.sleep(60)
         idempotency.evict_expired()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifecycle manager for FastAPI, sets up DB schema, seeds accounts, starts eviction loop."""
@@ -64,13 +72,17 @@ async def lifespan(app: FastAPI):
         server_key.public_key_base64()[:32],
     )
     yield
+
+
 app = FastAPI(title="UPI-Mesh - Demo", lifespan=lifespan)
 templates = Jinja2Templates(directory="app/templates")
+
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     """Renders the dashboard template."""
     return templates.TemplateResponse("dashboard.html", {"request": request})
+
 
 @app.get("/api/server-key")
 def get_server_public_key():
@@ -80,6 +92,7 @@ def get_server_public_key():
         "algorithm": "RSA-2048 / OAEP-SHA256",
         "hybridScheme": "RSA-OAEP encrypts an AES-256-GCM session key",
     }
+
 
 @app.post("/api/demo/send")
 def demo_send(req: DemoSendRequest):
@@ -96,6 +109,7 @@ def demo_send(req: DemoSendRequest):
         "ttl": packet.ttl,
         "injectedAt": start_device,
     }
+
 
 @app.get("/api/mesh/state")
 def mesh_state():
@@ -114,11 +128,15 @@ def mesh_state():
         "devices": device_data,
         "idempotencyCacheSize": idempotency.size(),
     }
+
+
 @app.post("/api/mesh/gossip")
 def mesh_gossip():
     """Triggers one round of gossiping across devices in the mesh network simulation."""
     result = mesh.gossip_once()
     return {"transfers": result.transfers, "deviceCounts": result.device_counts}
+
+
 @app.post("/api/mesh/flush")
 def mesh_flush():
     """ "All bridge nodes simultaneously walk outside and connect to the Internet." They
@@ -130,6 +148,7 @@ def mesh_flush():
     exercises concurrent idempotency, not just sequential dedup.
     """
     uploads = mesh.collect_bridge_uploads()
+
     def process(upload):
         with SessionLocal() as db:
             r = bridge.ingest(
@@ -142,14 +161,18 @@ def mesh_flush():
             "reason": r.reason or "",
             "transactionId": r.transaction_id if r.transaction_id is not None else -1,
         }
+
     results = list(_bridge_upload_pool.map(process, uploads))
     return {"uploadsAttempted": len(uploads), "results": results}
+
+
 @app.post("/api/mesh/reset")
 def mesh_reset():
     """Resets the entire mesh network simulator state and clears the idempotency cache."""
     mesh.reset_mesh()
     idempotency.clear()
     return {"status": "mesh and idempotency cache cleared"}
+
 
 @app.post("/api/bridge/ingest")
 def ingest(
@@ -164,6 +187,7 @@ def ingest(
     r = bridge.ingest(db, packet, x_bridge_node_id, x_hop_count)
     return r
 
+
 @app.get("/api/accounts")
 def list_accounts(db: Session = Depends(get_db)):
     """Returns a list of all accounts for the dashboard view."""
@@ -172,6 +196,8 @@ def list_accounts(db: Session = Depends(get_db)):
         {"vpa": a.vpa, "holderName": a.holder_name, "balance": str(a.balance)}
         for a in accounts
     ]
+
+
 @app.get("/api/transactions")
 def list_transactions(db: Session = Depends(get_db)):
     """Returns a list of recent settled transactions for the dashboard view."""

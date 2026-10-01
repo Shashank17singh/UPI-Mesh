@@ -9,31 +9,41 @@ bridge node.
   4. Check freshness - reject if signed_at is too old (replay protection).
   5. Hand off to SettlementService for the actual debit/credit.
 """
+
 import logging
 import time
 from dataclasses import dataclass
-from typing import Optional
+
 from sqlalchemy.orm import Session
+
 from app.crypto_service import HybridCryptoService
 from app.idempotency_service import IdempotencyService
 from app.schemas import MeshPacket
 from app.settlement_service import SettlementService
+
 log = logging.getLogger("upimesh.bridge")
+
+
 @dataclass
 class IngestResult:
     outcome: str
     packet_hash: str
-    reason: Optional[str] = None
-    transaction_id: Optional[int] = None
+    reason: str | None = None
+    transaction_id: int | None = None
+
     @staticmethod
     def settled(packet_hash: str, transaction_id: int) -> "IngestResult":
         return IngestResult("SETTLED", packet_hash, None, transaction_id)
+
     @staticmethod
     def duplicate(packet_hash: str) -> "IngestResult":
         return IngestResult("DUPLICATE_DROPPED", packet_hash, None, None)
+
     @staticmethod
     def invalid(packet_hash: str, reason: str) -> "IngestResult":
         return IngestResult("INVALID", packet_hash, reason, None)
+
+
 class BridgeIngestionService:
     def __init__(
         self,
@@ -46,6 +56,7 @@ class BridgeIngestionService:
         self.idempotency = idempotency
         self.settlement = settlement
         self.max_age_seconds = max_age_seconds
+
     def ingest(
         self, db: Session, packet: MeshPacket, bridge_node_id: str, hop_count: int
     ) -> IngestResult:

@@ -1,8 +1,11 @@
 from datetime import datetime, timezone
 from decimal import Decimal
+
 from app.models import Account, Transaction, TransactionStatus
 from app.schemas import PaymentInstruction
 from app.settlement_service import SettlementService
+
+
 def _instruction(
     amount: float, sender="alice@demo", receiver="bob@demo"
 ) -> PaymentInstruction:
@@ -14,6 +17,8 @@ def _instruction(
         nonce="n-1",
         signed_at=int(datetime.now(tz=timezone.utc).timestamp() * 1000),
     )
+
+
 def test_settle_moves_funds_between_accounts(db_session):
     svc = SettlementService()
     tx = svc.settle(db_session, _instruction(500), "hash-1", "phone-bridge", 2)
@@ -22,7 +27,9 @@ def test_settle_moves_funds_between_accounts(db_session):
     assert alice.balance == Decimal("4500.00")
     assert bob.balance == Decimal("1500.00")
     assert tx.status == TransactionStatus.SETTLED
-    assert tx.amount == Decimal("500")
+    assert tx.amount == Decimal(500)
+
+
 def test_settle_rejects_when_balance_insufficient(db_session):
     svc = SettlementService()
     tx = svc.settle(db_session, _instruction(999_999), "hash-1", "phone-bridge", 0)
@@ -31,6 +38,8 @@ def test_settle_rejects_when_balance_insufficient(db_session):
     assert alice.balance == Decimal("5000.00")
     assert bob.balance == Decimal("1000.00")
     assert tx.status == TransactionStatus.REJECTED
+
+
 def test_settle_rejects_zero_or_negative_amount(db_session):
     svc = SettlementService()
     try:
@@ -38,6 +47,8 @@ def test_settle_rejects_zero_or_negative_amount(db_session):
         assert False, "expected ValueError for non-positive amount"
     except ValueError:
         pass
+
+
 def test_settle_raises_for_unknown_vpa(db_session):
     svc = SettlementService()
     try:
@@ -51,6 +62,8 @@ def test_settle_raises_for_unknown_vpa(db_session):
         assert False, "expected ValueError for unknown sender"
     except ValueError:
         pass
+
+
 def test_unique_packet_hash_enforced_at_db_level(db_session):
     """The packet_hash unique constraint is the defense-in-depth fallback
     if the in-memory idempotency cache ever fails."""
@@ -58,6 +71,8 @@ def test_unique_packet_hash_enforced_at_db_level(db_session):
     svc.settle(db_session, _instruction(100), "same-hash", "phone-bridge", 0)
     existing = db_session.query(Transaction).filter_by(packet_hash="same-hash").count()
     assert existing == 1
+
+
 def test_settle_rejects_invalid_pin(db_session):
     svc = SettlementService()
     inst = _instruction(100)

@@ -7,24 +7,33 @@ When a device with internet (a "bridge node") holds a packet, the demo's
 /api/mesh/flush endpoint causes it to actually POST that packet to our
 backend - simulating the moment a phone walks outside and connects to the Internet.
 """
+
 import logging
 from dataclasses import dataclass
-from typing import Optional
+
 from app.schemas import MeshPacket
 from app.virtual_device import VirtualDevice
+
 log = logging.getLogger("upimesh.mesh")
+
+
 @dataclass
 class GossipResult:
     transfers: int
     device_counts: dict[str, int]
+
+
 @dataclass
 class BridgeUpload:
     bridge_node_id: str
     packet: MeshPacket
+
+
 class MeshSimulatorService:
     def __init__(self):
         self.devices: dict[str, VirtualDevice] = {}
         self._seed_default_devices()
+
     def _seed_default_devices(self) -> None:
         for device_id in (
             "phone-sender",
@@ -34,10 +43,13 @@ class MeshSimulatorService:
         ):
             self.devices[device_id] = VirtualDevice(device_id, has_internet=False)
         self.devices["phone-bridge"] = VirtualDevice("phone-bridge", has_internet=True)
+
     def get_devices(self) -> list[VirtualDevice]:
         return list(self.devices.values())
-    def get_device(self, device_id: str) -> Optional[VirtualDevice]:
+
+    def get_device(self, device_id: str) -> VirtualDevice | None:
         return self.devices.get(device_id)
+
     def inject(self, sender_device_id: str, packet: MeshPacket) -> None:
         """Sender drops a packet into the mesh by handing it to their own
         device."""
@@ -51,6 +63,7 @@ class MeshSimulatorService:
             sender_device_id,
             packet.ttl,
         )
+
     def gossip_once(self) -> GossipResult:
         """One round of gossip. Every device shares everything it has with
         every other device. TTL is decremented per hop; packets at TTL 0
@@ -81,8 +94,10 @@ class MeshSimulatorService:
                     transfers += 1
         log.info("Gossip round complete: %s packet transfers", transfers)
         return GossipResult(transfers, self.snapshot_map())
+
     def snapshot_map(self) -> dict[str, int]:
         return {d.device_id: d.packet_count() for d in self.devices.values()}
+
     def collect_bridge_uploads(self) -> list[BridgeUpload]:
         """Returns all packets held by devices with internet - these are
         what would be uploaded to the backend the moment they reach
@@ -94,6 +109,7 @@ class MeshSimulatorService:
             for pkt in d.held_packets():
                 out.append(BridgeUpload(d.device_id, pkt))
         return out
+
     def reset_mesh(self) -> None:
         for d in self.devices.values():
             d.clear()

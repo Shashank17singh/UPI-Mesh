@@ -4,8 +4,6 @@
 
 **A payment backend that settles UPI-style transactions with zero internet - hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard**
 
-
-
 [![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-D71F00?style=for-the-badge&logo=python&logoColor=white)](https://www.sqlalchemy.org/)
@@ -15,29 +13,27 @@
 
 ---
 
-##  Overview
+## Overview
 
 Engineered an advanced offline-first UPI-Mesh payment system utilizing a modern Python/FastAPI architecture. It simulates a UPI payment that has to survive **zero internet connectivity**. A sender's phone encrypts a payment instruction and hands it to a mesh of nearby phones over Bluetooth. The packet hops phone-to-phone with no intermediate ever able to read or forge it, until one phone in the chain regains internet access ("bridge node") and uploads it to the backend - which decrypts, checks for replays and duplicates, and settles the ledger. All of it is served through a FastAPI backend with a live browser dashboard.
 
 ---
 
-##  Pipeline
+## Pipeline
 
-| Stage | What Happens |
-|---|---|
-|  **Encrypt** | The sender's phone wraps the payment in RSA-2048 (OAEP/SHA-256) + AES-256-GCM hybrid encryption before it ever leaves the device |
-|  **Gossip** | Simulated phones relay the encrypted packet to each other over Bluetooth, decrementing a TTL each hop |
-|  **Bridge** | Once a phone with internet holds the packet, it uploads it to the backend as if it just got signal |
-|  **Dedup** | The ciphertext's SHA-256 hash - not the packet ID, which a relay could rewrite - is checked against an idempotency cache so duplicate deliveries settle only once |
-|  **Freshness Check** | Packets signed too long ago are rejected outright, closing the replay window |
-|  **Settle** | The backend decrypts, then debits and credits accounts atomically with optimistic locking |
-|  **Dashboard** | A live browser UI to send payments, run gossip rounds, flush bridges, and watch the ledger update |
+| Stage               | What Happens                                                                                                                                                      |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Encrypt**         | The sender's phone wraps the payment in RSA-2048 (OAEP/SHA-256) + AES-256-GCM hybrid encryption before it ever leaves the device                                  |
+| **Gossip**          | Simulated phones relay the encrypted packet to each other over Bluetooth, decrementing a TTL each hop                                                             |
+| **Bridge**          | Once a phone with internet holds the packet, it uploads it to the backend as if it just got signal                                                                |
+| **Dedup**           | The ciphertext's SHA-256 hash - not the packet ID, which a relay could rewrite - is checked against an idempotency cache so duplicate deliveries settle only once |
+| **Freshness Check** | Packets signed too long ago are rejected outright, closing the replay window                                                                                      |
+| **Settle**          | The backend decrypts, then debits and credits accounts atomically with optimistic locking                                                                         |
+| **Dashboard**       | A live browser UI to send payments, run gossip rounds, flush bridges, and watch the ledger update                                                                 |
 
 ---
 
-
-
-###  Mesh Architecture
+### Mesh Architecture
 
 ```mermaid
 graph TD
@@ -47,7 +43,7 @@ graph TD
     B --> D((Relay Node 3))
     C --> D
     end
-    
+
     subgraph "Internet Zone (Cloud)"
     D -->|Internet Connection Found| E(Bridge to FastAPI)
     E --> F{Idempotency Dedup}
@@ -55,17 +51,17 @@ graph TD
     F -->|New Payload| H[Decrypt RSA/AES]
     H --> I[(Settle Ledger)]
     end
-    
+
     classDef io fill:#f9f0ff,stroke:#8a2be2,stroke-width:2px,color:#000;
     classDef core fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000;
     classDef logic fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#000;
-    
+
     class A,I io;
     class B,C,D core;
     class E,F,G,H logic;
 ```
 
-##  Tech Stack
+## Tech Stack
 
 **Backend** - Python · FastAPI · Uvicorn
 **Data** - SQLAlchemy ORM · SQLite · Pydantic
@@ -75,7 +71,7 @@ graph TD
 
 ---
 
-##  Directory Structure
+## Directory Structure
 
 ```
 UPI-Mesh/
@@ -103,7 +99,7 @@ UPI-Mesh/
 
 ---
 
-##  Setup and Installation
+## Setup and Installation
 
 ### Prerequisites
 
@@ -135,19 +131,19 @@ Once the server is running, open `http://localhost:8080` in your browser. Compos
 
 ---
 
-##  API Reference
+## API Reference
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/server-key` | Fetch the server's RSA public key |
-| `POST` | `/api/demo/send` | Simulate a sender phone creating and injecting a packet |
-| `GET` | `/api/mesh/state` | What each simulated device currently holds |
-| `POST` | `/api/mesh/gossip` | Run one round of phone-to-phone packet exchange |
-| `POST` | `/api/mesh/flush` | Bridge nodes upload everything they hold (parallelized, to exercise idempotency under concurrency) |
-| `POST` | `/api/mesh/reset` | Clear the mesh and idempotency cache |
-| `POST` | `/api/bridge/ingest` | The production endpoint - headers `X-Bridge-Node-Id`, `X-Hop-Count` |
-| `GET` | `/api/accounts` | List demo accounts and balances |
-| `GET` | `/api/transactions` | Last 20 settled/rejected transactions |
+| Method | Endpoint             | Description                                                                                        |
+| ------ | -------------------- | -------------------------------------------------------------------------------------------------- |
+| `GET`  | `/api/server-key`    | Fetch the server's RSA public key                                                                  |
+| `POST` | `/api/demo/send`     | Simulate a sender phone creating and injecting a packet                                            |
+| `GET`  | `/api/mesh/state`    | What each simulated device currently holds                                                         |
+| `POST` | `/api/mesh/gossip`   | Run one round of phone-to-phone packet exchange                                                    |
+| `POST` | `/api/mesh/flush`    | Bridge nodes upload everything they hold (parallelized, to exercise idempotency under concurrency) |
+| `POST` | `/api/mesh/reset`    | Clear the mesh and idempotency cache                                                               |
+| `POST` | `/api/bridge/ingest` | The production endpoint - headers `X-Bridge-Node-Id`, `X-Hop-Count`                                |
+| `GET`  | `/api/accounts`      | List demo accounts and balances                                                                    |
+| `GET`  | `/api/transactions`  | Last 20 settled/rejected transactions                                                              |
 
 ### Example: send a demo payment via curl
 
@@ -159,7 +155,7 @@ curl -X POST http://localhost:8080/api/demo/send \
 
 ---
 
-##  Running the Tests
+## Running the Tests
 
 ```bash
 pip install -r requirements-dev.txt
@@ -170,7 +166,7 @@ pytest -v
 
 ---
 
-##  Design Notes
+## Design Notes
 
 - **Why hash the ciphertext, not the packet ID, for idempotency?** An intermediate phone can freely rewrite the outer `packet_id`; it cannot forge a ciphertext that decrypts to a different valid payload. Two delivered copies of the same encrypted packet always hash identically.
 - **Why optimistic locking on accounts?** The idempotency layer should always catch duplicates first, but a version column on `Account` means a race that somehow slips past it fails loudly (`StaleDataError`) instead of silently corrupting a balance.
@@ -178,37 +174,35 @@ pytest -v
 
 ---
 
-##  License
+## License
 
 MIT - see [LICENSE](LICENSE).
-
-
 
 ---
 
 ## Deployment
+
 - **API URL:** https://upi-mesh.duckdns.org/docs
 - **Dashboard URL:** https://upi-mesh.duckdns.org/
 
-
---- 
+---
 
 ## Deep Codebase Analysis
 
-| File | Purpose / Details |
-|---|---|
-| `app\__init__.py` | Core component logic and implementation details. |
-| `app\bridge_ingestion_service.py` | Orchestrates the full server-side pipeline for one inbound packet from a |
-| `app\crypto_service.py` | Hybrid encryption - the same pattern used by TLS, PGP, Signal, etc. |
-| `app\database.py` | Database setup. We use SQLite in-memory, kept alive for the whole process |
-| `app\demo_service.py` | Helper service that seeds demo accounts on startup and simulates the |
-| `app\idempotency_service.py` | In-memory idempotency cache. In production this would be Redis with |
-| `app\main.py` | FastAPI application entrypoint - wires up the singleton services and |
-| `app\mesh_simulator_service.py` | Simulates the Bluetooth mesh. |
-| `app\models.py` | ORM models for the two tables this service owns: accounts (the simulated |
-| `app\schemas.py` | Pydantic models for the wire format: the payment instruction itself, the |
-| `app\settlement_service.py` | Where the actual ledger update happens. Wrapped in a DB transaction so |
-| `app\virtual_device.py` | A simulated phone in the mesh. Holds packets it has seen. |
-| `docker-compose.yml` | Core component logic and implementation details. |
-| `log.txt` | Binary or unreadable file. |
-| `requirements-dev.txt` | Core component logic and implementation details. |
+| File                              | Purpose / Details                                                         |
+| --------------------------------- | ------------------------------------------------------------------------- |
+| `app\__init__.py`                 | Core component logic and implementation details.                          |
+| `app\bridge_ingestion_service.py` | Orchestrates the full server-side pipeline for one inbound packet from a  |
+| `app\crypto_service.py`           | Hybrid encryption - the same pattern used by TLS, PGP, Signal, etc.       |
+| `app\database.py`                 | Database setup. We use SQLite in-memory, kept alive for the whole process |
+| `app\demo_service.py`             | Helper service that seeds demo accounts on startup and simulates the      |
+| `app\idempotency_service.py`      | In-memory idempotency cache. In production this would be Redis with       |
+| `app\main.py`                     | FastAPI application entrypoint - wires up the singleton services and      |
+| `app\mesh_simulator_service.py`   | Simulates the Bluetooth mesh.                                             |
+| `app\models.py`                   | ORM models for the two tables this service owns: accounts (the simulated  |
+| `app\schemas.py`                  | Pydantic models for the wire format: the payment instruction itself, the  |
+| `app\settlement_service.py`       | Where the actual ledger update happens. Wrapped in a DB transaction so    |
+| `app\virtual_device.py`           | A simulated phone in the mesh. Holds packets it has seen.                 |
+| `docker-compose.yml`              | Core component logic and implementation details.                          |
+| `log.txt`                         | Binary or unreadable file.                                                |
+| `requirements-dev.txt`            | Core component logic and implementation details.                          |

@@ -7,14 +7,20 @@ commit will raise StaleDataError rather than corrupting the balance. (In a
 demo the idempotency layer should always catch this first, but defense in
 depth.)
 """
+
 import logging
 from datetime import datetime, timezone
 from decimal import Decimal
+
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import StaleDataError
+
 from app.models import Account, Transaction, TransactionStatus
 from app.schemas import PaymentInstruction
+
 log = logging.getLogger("upimesh.settlement")
+
+
 class SettlementService:
     def settle(
         self,
@@ -77,6 +83,7 @@ class SettlementService:
             hop_count,
         )
         return tx
+
     def _record_rejected(
         self,
         db: Session,

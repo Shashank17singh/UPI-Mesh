@@ -1,10 +1,14 @@
+from decimal import Decimal
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
+
 from app.database import Base
 from app.models import Account
-from decimal import Decimal
+
+
 @pytest.fixture()
 def db_session():
     """A fresh in-memory SQLite DB per test, seeded with the same 4 demo

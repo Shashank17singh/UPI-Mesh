@@ -54,6 +54,7 @@ def _eviction_loop():
         idempotency.evict_expired()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Lifecycle manager for FastAPI, sets up DB schema, seeds accounts, starts eviction loop."""
     Base.metadata.create_all(bind=engine)
     with SessionLocal() as db:
         demo.seed_accounts(db)
@@ -69,10 +70,12 @@ templates = Jinja2Templates(directory="app/templates")
 # ------------------------------------------------------------------ dashboard
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
+    """Renders the dashboard template."""
     return templates.TemplateResponse("dashboard.html", {"request": request})
 # ------------------------------------------------------------------ key
 @app.get("/api/server-key")
 def get_server_public_key():
+    """Returns the server's public key so simulated senders can fetch it."""
     return {
         "publicKey": server_key.public_key_base64(),
         "algorithm": "RSA-2048 / OAEP-SHA256",
@@ -97,6 +100,7 @@ def demo_send(req: DemoSendRequest):
 # -------------------------------------------------------------- mesh sim
 @app.get("/api/mesh/state")
 def mesh_state():
+    """Returns the current state of devices in the mesh simulation."""
     device_data = []
     for d in mesh.get_devices():
         device_data.append(
@@ -113,6 +117,7 @@ def mesh_state():
     }
 @app.post("/api/mesh/gossip")
 def mesh_gossip():
+    """Triggers one round of gossiping across devices in the mesh network simulation."""
     result = mesh.gossip_once()
     return {"transfers": result.transfers, "deviceCounts": result.device_counts}
 @app.post("/api/mesh/flush")
@@ -142,6 +147,7 @@ def mesh_flush():
     return {"uploadsAttempted": len(uploads), "results": results}
 @app.post("/api/mesh/reset")
 def mesh_reset():
+    """Resets the entire mesh network simulator state and clears the idempotency cache."""
     mesh.reset_mesh()
     idempotency.clear()
     return {"status": "mesh and idempotency cache cleared"}
@@ -161,6 +167,7 @@ def ingest(
 # ------------------------------------------------------------- accounts
 @app.get("/api/accounts")
 def list_accounts(db: Session = Depends(get_db)):
+    """Returns a list of all accounts for the dashboard view."""
     accounts = db.query(Account).all()
     return [
         {"vpa": a.vpa, "holderName": a.holder_name, "balance": str(a.balance)}
@@ -168,6 +175,7 @@ def list_accounts(db: Session = Depends(get_db)):
     ]
 @app.get("/api/transactions")
 def list_transactions(db: Session = Depends(get_db)):
+    """Returns a list of recent settled transactions for the dashboard view."""
     txs = db.query(Transaction).order_by(Transaction.id.desc()).limit(20).all()
     return [
         {

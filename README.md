@@ -189,3 +189,26 @@ MIT - see [LICENSE](LICENSE).
 ## Deployment
 - **API URL:** https://upi-mesh.duckdns.org/docs
 - **Dashboard URL:** https://upi-mesh.duckdns.org/
+
+
+--- 
+
+## Deep Codebase Analysis
+
+| File | Purpose / Details |
+|---|---|
+| `app\__init__.py` | Core component logic and implementation details. |
+| `app\bridge_ingestion_service.py` | Orchestrates the full server-side pipeline for one inbound packet from a |
+| `app\crypto_service.py` | Hybrid encryption - the same pattern used by TLS, PGP, Signal, etc. |
+| `app\database.py` | Database setup. We use SQLite in-memory, kept alive for the whole process |
+| `app\demo_service.py` | Helper service that seeds demo accounts on startup and simulates the |
+| `app\idempotency_service.py` | In-memory idempotency cache. In production this would be Redis with |
+| `app\main.py` | FastAPI application entrypoint - wires up the singleton services and |
+| `app\mesh_simulator_service.py` | Simulates the Bluetooth mesh. |
+| `app\models.py` | ORM models for the two tables this service owns: accounts (the simulated |
+| `app\schemas.py` | Pydantic models for the wire format: the payment instruction itself, the |
+| `app\settlement_service.py` | Where the actual ledger update happens. Wrapped in a DB transaction so |
+| `app\virtual_device.py` | A simulated phone in the mesh. Holds packets it has seen. |
+| `docker-compose.yml` | Core component logic and implementation details. |
+| `log.txt` | Binary or unreadable file. |
+| `requirements-dev.txt` | Core component logic and implementation details. |

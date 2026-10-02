@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Architecture - UPI-Mesh</title>
+              <meta name="color-scheme" content="dark">
+  <meta name="darkreader-lock">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Geist+Mono&family=Geist:wght@400;600&family=Instrument+Serif:ital@0;1&display=swap');
+    
+    :root {
+      color-scheme: dark;
+      --bg-body: #050505;
+      --bg-container: #0a0a0a;
+      --node-fill: #171717;
+      --node-stroke: #404040;
+      --node-text: #f5f5f5;
+      --node-sub: #a3a3a3;
+      --edge-stroke: #525252;
+      --edge-text: #a3a3a3;
+      --hover-node-stroke: #a3a3a3;
+      --hover-node-fill: #262626;
+      --hover-edge: #d4d4d4;
+    }
+
+    body { 
+      margin: 0; 
+      padding: 2rem; 
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; 
+      background-color: var(--bg-body); 
+      color: var(--node-text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .diagram-container { 
+      width: 100%; 
+      max-width: 1200px;
+      overflow-x: auto; 
+      background-color: var(--bg-container); 
+      border: 1px solid #262626; 
+      border-radius: 12px; 
+      padding: 3rem; 
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+    }
+    
+    svg { 
+      width: 100%; 
+      min-width: 960px; 
+      display: block; 
+    }
+
+    .node rect { 
+      fill: var(--node-fill); 
+      stroke: var(--node-stroke); 
+      stroke-width: 1.5; 
+      rx: 6; 
+      transition: all 0.2s ease;
+    }
+    .node:hover rect {
+      stroke: var(--hover-node-stroke);
+      fill: var(--hover-node-fill);
+    }
+    
+    .node text { 
+      fill: var(--node-text); 
+      font-size: 12px; 
+      font-weight: 600; 
+      transition: all 0.2s ease;
+      letter-spacing: 0.02em;
+    }
+    .node .sub { 
+      font-family: 'Geist Mono', 'Consolas', 'Courier New', monospace; 
+      font-size: 11px; 
+      font-weight: normal; 
+      fill: var(--node-sub); 
+    }
+    .node:hover text {
+      fill: #ffffff;
+    }
+    .node:hover .sub {
+      fill: #d4d4d4;
+    }
+    
+    .edge path { 
+      fill: none; 
+      stroke: var(--edge-stroke); 
+      stroke-width: 1.5; 
+      transition: all 0.2s ease;
+    }
+    .edge:hover path {
+      stroke: var(--hover-edge);
+      stroke-width: 2;
+    }
+    
+    .edge text { 
+      font-family: 'Geist Mono', 'Consolas', 'Courier New', monospace; 
+      font-size: 8px; 
+      fill: var(--edge-text); 
+      paint-order: stroke fill;
+      stroke: var(--bg-container);
+      stroke-width: 8px;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+    
+    .title { 
+      font-family: 'Instrument Serif', Georgia, serif; 
+      font-size: 28px; 
+      fill: var(--node-text); 
+    }
+    .subtitle { 
+      font-family: 'Geist Mono', 'Consolas', 'Courier New', monospace; 
+      font-size: 11px; 
+      fill: #737373; 
+    }
+    
+    .zone { 
+      fill: rgba(255,255,255,0.02); 
+      stroke: rgba(255,255,255,0.1); 
+      stroke-width: 1; 
+      rx: 8; 
+    }
+    .zone-label { 
+      font-family: 'Geist Mono', 'Consolas', 'Courier New', monospace; 
+      font-size: 9px; 
+      fill: rgba(255,255,255,0.4); 
+      letter-spacing: 0.14em; 
+    }
+
+    @keyframes flow {
+      to { stroke-dashoffset: -20; }
+    }
+    .edge path[stroke-dasharray] {
+      animation: flow 1.5s linear infinite;
+      stroke: var(--node-sub);
+    }
+  </style>
+</head>
+<body>
+  <div class="diagram-container">
+    <svg viewBox="0 0 1190 600" role="img" aria-labelledby="title desc">
+      <title id="title">UPI-Mesh Architecture</title>
+      <desc id="desc">Offline-First Bluetooth Mesh Payments</desc>
+      
+                                    <defs>
+        <marker id="arrow" viewBox="0 0 190 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0.0 0.0 L 10.5 5.0 L 0.0 10.0 z" fill="#525252" style="fill: context-stroke;" />
+        </marker>
+      </defs>
+
+      <text x="42.1" y="60" class="title">UPI-Mesh</text>
+      <text x="42.1" y="80" class="subtitle">Offline-First Payments over a Bluetooth Mesh</text>
+
+      <!-- Zones -->
+      <rect x="42.1" y="120" width="379.1" height="400" class="zone" />
+      <text x="52.6" y="135" class="zone-label">OFFLINE ZONE (BLUETOOTH MESH)</text>
+
+      <rect x="463.3" y="120" width="685.4" height="400" class="zone" />
+      <text x="473.8" y="135" class="zone-label">INTERNET ZONE (CLOUD)</text>
+
+      <!-- Nodes -->
+      <g class="node" transform="translate(84.2, 270)">
+        <rect x="0.0" y="0" width="147.4" height="60" />
+        <text x="73.7" y="25" text-anchor="middle" >Sender Device</text>
+        <text x="73.7" y="40" class="sub" text-anchor="middle" >Encrypted Payload</text>
+      </g>
+      <g class="node" transform="translate(273.8, 200)">
+        <rect x="0.0" y="0" width="105.3" height="40" rx="21.1" />
+        <text x="52.6" y="20" text-anchor="middle" >Relay 1</text>
+      </g>
+      <g class="node" transform="translate(273.8, 360)">
+        <rect x="0.0" y="0" width="105.3" height="40" rx="21.1" />
+        <text x="52.6" y="20" text-anchor="middle" >Relay 2</text>
+      </g>
+      <g class="node" transform="translate(505.4, 270)">
+        <rect x="0.0" y="0" width="147.4" height="60" />
+        <text x="73.7" y="25" text-anchor="middle" >Bridge to FastAPI</text>
+        <text x="73.7" y="40" class="sub" text-anchor="middle" >Internet Found</text>
+      </g>
+      
+      <g class="node" transform="translate(695.0, 270)">
+        <rect x="0.0" y="0" width="147.4" height="60" />
+        <text x="73.7" y="25" text-anchor="middle" >Idempotency Dedup</text>
+        <text x="73.7" y="40" class="sub" text-anchor="middle" >Check Cache</text>
+      </g>
+      <g class="node" transform="translate(884.5, 180)">
+        <rect x="0.0" y="0" width="84.2" height="40" />
+        <text x="42.1" y="20" text-anchor="middle" >Discard</text>
+      </g>
+      <g class="node" transform="translate(884.5, 360)">
+        <rect x="0.0" y="0" width="105.3" height="40" />
+        <text x="52.6" y="20" text-anchor="middle" >Decrypt & Settle</text>
+      </g>
+
+      <!-- Edges -->
+      <g class="edge">
+        <!-- Mesh -->
+        <path d="M 231.7 280.0 L 252.7 280.0 L 252.7 220.0 L 273.8 220.0" marker-end="url(#arrow)" />
+        <path d="M 231.7 320.0 L 252.7 320.0 L 252.7 380.0 L 273.8 380.0" marker-end="url(#arrow)" />
+        
+        <!-- Mesh to Bridge -->
+        <path d="M 379.1 220.0 L 442.3 220.0 L 442.3 290.0 L 505.4 290.0" marker-end="url(#arrow)" />
+        <path d="M 379.1 380.0 L 442.3 380.0 L 442.3 310.0 L 505.4 310.0" marker-end="url(#arrow)" />
+
+        <!-- Bridge to Dedup -->
+        <path d="M 652.9 300.0 L 695.0 300.0" marker-end="url(#arrow)" />
+        
+        <!-- Dedup logic -->
+        <path d="M 842.4 280.0 L 863.5 280.0 L 863.5 200.0 L 884.5 200.0" marker-end="url(#arrow)" />
+        <text x="852.9" y="243" text-anchor="middle" >Duplicate</text>
+
+        <path d="M 842.4 320.0 L 863.5 320.0 L 863.5 380.0 L 884.5 380.0" marker-end="url(#arrow)" />
+        <text x="852.9" y="363" text-anchor="middle" >New</text>
+      </g>
+    </svg>
+  </div>
+</body>
+</html>

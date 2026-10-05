@@ -16,6 +16,7 @@ jobs:
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
+        continue-on-error: true
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
@@ -33,3 +34,4 @@ jobs:
             sudo docker compose up -d --build
             sleep 5
             sudo docker compose logs
+

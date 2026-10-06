@@ -1,13 +1,7 @@
 """
-Where the actual ledger update happens. Wrapped in a DB transaction so
-either BOTH the debit and credit happen, or neither does.
-Account.version gives us optimistic locking - if two threads somehow get
-past idempotency and both try to debit the same account, the second one's
-commit will raise StaleDataError rather than corrupting the balance. (In a
-demo the idempotency layer should always catch this first, but defense in
-depth.)
+Settlement service for executing offline payments.
+Validates business rules, updates ledger balances atomically, and records permanent transaction states.
 """
-
 import logging
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -30,6 +24,12 @@ class SettlementService:
         bridge_node_id: str,
         hop_count: int,
     ) -> Transaction:
+        """
+        Executes a payment instruction atomically.
+        Performs strict checks on PIN, balance, and account existence. 
+        Records the transaction state in the database, committing or rolling back 
+        entirely to ensure ledger consistency.
+        """
         sender = db.get(Account, instruction.sender_vpa)
         if sender is None:
             raise ValueError(f"Unknown sender VPA: {instruction.sender_vpa}")

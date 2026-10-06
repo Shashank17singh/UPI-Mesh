@@ -1,9 +1,7 @@
 """
-A simulated phone in the mesh. Holds packets it has seen.
-In the real system, this state would be on a physical Android device, with
-packets exchanged via BLE GATT characteristics.
+Virtual device model representing a node in the mesh network.
+Maintains state for held packets and simulates intermittent internet connectivity.
 """
-
 import threading
 
 from app.schemas import MeshPacket

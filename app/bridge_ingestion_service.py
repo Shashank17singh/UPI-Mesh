@@ -1,15 +1,7 @@
 """
-Orchestrates the full server-side pipeline for one inbound packet from a
-bridge node.
-  1. Hash the ciphertext.
-  2. Try to claim that hash via the idempotency cache.
-     - If already claimed: this is a duplicate. Drop it.
-  3. Decrypt the ciphertext with the server's private key.
-     - If decryption fails: tampered or junk. Reject.
-  4. Check freshness - reject if signed_at is too old (replay protection).
-  5. Hand off to SettlementService for the actual debit/credit.
+Bridge ingestion service for UPI-Mesh.
+Handles ingestion of mesh packets from internet-connected bridge nodes, performing idempotency checks, decryption, and triggering settlement.
 """
-
 import logging
 import time
 from dataclasses import dataclass
@@ -60,6 +52,11 @@ class BridgeIngestionService:
     def ingest(
         self, db: Session, packet: MeshPacket, bridge_node_id: str, hop_count: int
     ) -> IngestResult:
+        """
+        Processes a mesh packet via the bridge. Enforces idempotency to prevent 
+        double-spending of retransmitted packets, decrypts the instruction, validates
+        time-to-live constraints, and delegates to the settlement ledger.
+        """
         try:
             packet_hash = self.crypto.hash_ciphertext(packet.ciphertext)
 

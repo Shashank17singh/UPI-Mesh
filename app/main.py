@@ -1,16 +1,8 @@
 """
-FastAPI application entrypoint - wires up the singleton services and
-exposes the HTTP routes.
-Endpoint groups:
-  /                      -> dashboard page
-  /api/server-key        -> so simulated senders can fetch the server's public key
-  /api/demo/*            -> demo helpers
-  /api/mesh/*            -> simulator endpoints (state, gossip, flush, reset)
-  /api/bridge/ingest     -> THE real production endpoint a real bridge node would hit
-  /api/accounts          -> for the dashboard
-  /api/transactions      -> for the dashboard
+FastAPI application for UPI-Mesh simulator.
+Initializes the mesh simulation, settlement services, and HTTP routes.
+Architecture note: Relies on `ThreadPoolExecutor` and background eviction loops to model resilient async network routing.
 """
-
 import logging
 import threading
 import time
@@ -52,8 +44,10 @@ _bridge_upload_pool = ThreadPoolExecutor(max_workers=8)
 
 
 def _eviction_loop():
-    """Background housekeeping thread - periodically evicts idempotency
-    entries past their TTL so the cache doesn't grow forever."""
+    """
+    Background worker that runs periodically to reap expired packet hashes from 
+    the idempotency cache, preventing unbounded memory growth.
+    """
     while True:
         time.sleep(60)
         idempotency.evict_expired()
@@ -61,7 +55,6 @@ def _eviction_loop():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Lifecycle manager for FastAPI, sets up DB schema, seeds accounts, starts eviction loop."""
     Base.metadata.create_all(bind=engine)
     with SessionLocal() as db:
         demo.seed_accounts(db)
@@ -80,13 +73,11 @@ templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    """Renders the dashboard template."""
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
 
 @app.get("/api/server-key")
 def get_server_public_key():
-    """Returns the server's public key so simulated senders can fetch it."""
     return {
         "publicKey": server_key.public_key_base64(),
         "algorithm": "RSA-2048 / OAEP-SHA256",
@@ -96,8 +87,6 @@ def get_server_public_key():
 
 @app.post("/api/demo/send")
 def demo_send(req: DemoSendRequest):
-    """Demo helper: build a packet on the server (simulating a sender
-    phone) and inject it into the mesh at the given device."""
     packet = demo.create_packet(
         req.sender_vpa, req.receiver_vpa, req.amount, req.pin, req.ttl or 5
     )
@@ -113,7 +102,6 @@ def demo_send(req: DemoSendRequest):
 
 @app.get("/api/mesh/state")
 def mesh_state():
-    """Returns the current state of devices in the mesh simulation."""
     device_data = []
     for d in mesh.get_devices():
         device_data.append(
@@ -132,20 +120,15 @@ def mesh_state():
 
 @app.post("/api/mesh/gossip")
 def mesh_gossip():
-    """Triggers one round of gossiping across devices in the mesh network simulation."""
     result = mesh.gossip_once()
     return {"transfers": result.transfers, "deviceCounts": result.device_counts}
 
 
 @app.post("/api/mesh/flush")
 def mesh_flush():
-    """ "All bridge nodes simultaneously walk outside and connect to the Internet." They
-    all upload everything they hold to /api/bridge/ingest.
-    THIS is the moment the duplicate-storm idempotency case is tested: if
-    multiple bridge nodes hold the same packet, the server gets multiple
-    concurrent uploads of the same ciphertext, and only one should
-    settle. Uploads run in parallel (thread pool) so this actually
-    exercises concurrent idempotency, not just sequential dedup.
+    """
+    Simulates internet connectivity returning for bridge nodes. Collects all packets
+    from bridge devices and funnels them through the ingestion service concurrently.
     """
     uploads = mesh.collect_bridge_uploads()
 
@@ -168,7 +151,6 @@ def mesh_flush():
 
 @app.post("/api/mesh/reset")
 def mesh_reset():
-    """Resets the entire mesh network simulator state and clears the idempotency cache."""
     mesh.reset_mesh()
     idempotency.clear()
     return {"status": "mesh and idempotency cache cleared"}
@@ -181,16 +163,12 @@ def ingest(
     x_hop_count: int = Header(default=0),
     db: Session = Depends(get_db),
 ):
-    """THE PRODUCTION ENDPOINT. In a real deployment, the Android app's
-    bridge logic POSTs here whenever the device has internet and is
-    holding mesh packets."""
     r = bridge.ingest(db, packet, x_bridge_node_id, x_hop_count)
     return r
 
 
 @app.get("/api/accounts")
 def list_accounts(db: Session = Depends(get_db)):
-    """Returns a list of all accounts for the dashboard view."""
     accounts = db.query(Account).all()
     return [
         {"vpa": a.vpa, "holderName": a.holder_name, "balance": str(a.balance)}
@@ -200,7 +178,6 @@ def list_accounts(db: Session = Depends(get_db)):
 
 @app.get("/api/transactions")
 def list_transactions(db: Session = Depends(get_db)):
-    """Returns a list of recent settled transactions for the dashboard view."""
     txs = db.query(Transaction).order_by(Transaction.id.desc()).limit(20).all()
     return [
         {

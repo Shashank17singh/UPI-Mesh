@@ -1,8 +1,7 @@
 """
-Helper service that seeds demo accounts on startup and simulates the
-"sender phone creates an encrypted packet" flow.
+Demo service for generating and seeding mock transaction data.
+Facilitates the creation of test accounts and sample offline payment packets.
 """
-
 import hashlib
 import logging
 import time
@@ -59,14 +58,6 @@ class DemoService:
     def create_packet(
         self, sender_vpa: str, receiver_vpa: str, amount: float, pin: str, ttl: int
     ) -> MeshPacket:
-        """Simulates the sender's phone:
-          1. Build a PaymentInstruction with a fresh nonce + signed_at timestamp.
-          2. Encrypt with the server's public key (hybrid RSA+AES).
-          3. Wrap in a MeshPacket with TTL.
-        In a real Android app, this exact code (minus the server-side
-        reference) would run on the phone. The phone would have already
-        cached the server's public key during a previous online session.
-        """
         instruction = PaymentInstruction(
             sender_vpa=sender_vpa,
             receiver_vpa=receiver_vpa,

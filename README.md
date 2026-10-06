@@ -187,21 +187,4 @@ MIT - see [LICENSE](LICENSE).
 
 ---
 
-## Deep Codebase Analysis
 
-| File                              | Purpose / Details                                                         |
-| --------------------------------- | ------------------------------------------------------------------------- |
-| `app/__init__.py`                 | Initializes the app package.                                              |
-| `app/bridge_ingestion_service.py` | Orchestrates the full server-side pipeline for processing inbound packets.|
-| `app/crypto_service.py`           | Hybrid encryption - the same pattern used by TLS, PGP, Signal, etc.       |
-| `app/database.py`                 | Database setup. Uses SQLite in-memory, kept alive for the whole process.  |
-| `app/demo_service.py`             | Helper service that seeds demo accounts on startup and simulates traffic. |
-| `app/idempotency_service.py`      | In-memory idempotency cache for deduplication.                            |
-| `app/main.py`                     | FastAPI application entrypoint - wires up the singleton services.         |
-| `app/mesh_simulator_service.py`   | Simulates the Bluetooth mesh packet routing.                              |
-| `app/models.py`                   | ORM models for the accounts and transactions tables.                      |
-| `app/schemas.py`                  | Pydantic models for the wire format.                                      |
-| `app/settlement_service.py`       | Where the actual ledger update happens, wrapped in a DB transaction.      |
-| `app/virtual_device.py`           | A simulated phone in the mesh that holds packets it has seen.             |
-| `docker-compose.yml`              | Container orchestration config.                                           |
-| `requirements-dev.txt`            | Test and development dependencies.                                        |

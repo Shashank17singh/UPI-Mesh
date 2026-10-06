@@ -1,13 +1,7 @@
 """
-Simulates the Bluetooth mesh.
-Each VirtualDevice represents a phone. The "gossip" step picks pairs of
-devices that are nearby (we just say all devices are nearby for the demo)
-and copies packets between them, decrementing TTL each hop.
-When a device with internet (a "bridge node") holds a packet, the demo's
-/api/mesh/flush endpoint causes it to actually POST that packet to our
-backend - simulating the moment a phone walks outside and connects to the Internet.
+Mesh simulator service modeling device-to-device gossip propagation.
+Manages the virtual device network and simulates packet transfer over Bluetooth/Wi-Fi Direct.
 """
-
 import logging
 from dataclasses import dataclass
 
@@ -51,8 +45,6 @@ class MeshSimulatorService:
         return self.devices.get(device_id)
 
     def inject(self, sender_device_id: str, packet: MeshPacket) -> None:
-        """Sender drops a packet into the mesh by handing it to their own
-        device."""
         sender = self.devices.get(sender_device_id)
         if sender is None:
             raise ValueError(f"Unknown device: {sender_device_id}")
@@ -65,13 +57,6 @@ class MeshSimulatorService:
         )
 
     def gossip_once(self) -> GossipResult:
-        """One round of gossip. Every device shares everything it has with
-        every other device. TTL is decremented per hop; packets at TTL 0
-        stay where they are but are not forwarded further.
-        Real BLE gossip would be pair-by-pair when devices come into
-        range. For the demo we let everyone gossip with everyone in one
-        round, which is equivalent to "fast-forward N rounds of pairwise
-        gossip"."""
         transfers = 0
         device_list = list(self.devices.values())
         snapshot = {d.device_id: d.held_packets() for d in device_list}
@@ -99,16 +84,11 @@ class MeshSimulatorService:
         return {d.device_id: d.packet_count() for d in self.devices.values()}
 
     def collect_bridge_uploads(self) -> list[BridgeUpload]:
-        """Returns all packets held by devices with internet - these are
-        what would be uploaded to the backend the moment they reach
-        connectivity."""
-        out: list[BridgeUpload] = []
-        for d in self.devices.values():
-            if not d.has_internet:
-                continue
-            for pkt in d.held_packets():
-                out.append(BridgeUpload(d.device_id, pkt))
-        return out
+        return [
+            BridgeUpload(d.device_id, pkt)
+            for d in self.devices.values() if d.has_internet
+            for pkt in d.held_packets()
+        ]
 
     def reset_mesh(self) -> None:
         for d in self.devices.values():

@@ -15,7 +15,7 @@
 
 ## Overview
 
-An offline-first payment backend that settles UPI-style transactions without internet connectivity. It relies on a simulated Bluetooth mesh network and hybrid RSA/AES cryptography, ensuring idempotency and secure offline ledgers.
+An offline-first payment backend that settles UPI-style transactions without internet connectivity. It relies on a simulated Bluetooth mesh network and hybrid RSA/AES cryptography, with idempotent settlement and a secure offline ledger.
 
 ---
 
@@ -162,7 +162,7 @@ pip install -r requirements-dev.txt
 pytest -v
 ```
 
-27 tests cover the crypto round-trip and tamper detection, idempotency claim/evict semantics, ledger debit/credit correctness, mesh gossip/TTL behavior, and the full decrypt → dedup → freshness → settle pipeline.
+28 tests cover the crypto round-trip and tamper detection, idempotency claim/evict semantics, ledger debit/credit correctness, mesh gossip/TTL behavior, and the full decrypt → dedup → freshness → settle pipeline.
 
 ---
 

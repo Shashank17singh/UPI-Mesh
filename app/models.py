@@ -20,7 +20,7 @@ class Account(Base):
     pin_hash = Column(String, nullable=False, default="deadbeef")
     balance = Column(Numeric(19, 2), nullable=False)
     version = Column(Integer, nullable=False, default=0)
-    __mapper_args__ = {"version_id_col": version}
+    __mapper_args__ = {"version_id_col": version}  # noqa: RUF012
 
 
 class TransactionStatus(str, enum.Enum):

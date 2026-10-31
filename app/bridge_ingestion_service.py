@@ -70,7 +70,7 @@ class BridgeIngestionService:
 
             try:
                 instruction = self.crypto.decrypt(packet.ciphertext)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 log.warning(
                     "Decryption failed for packet %s...: %s", packet_hash[:12], e
                 )
@@ -91,6 +91,6 @@ class BridgeIngestionService:
                 db, instruction, packet_hash, bridge_node_id, hop_count
             )
             return IngestResult.settled(packet_hash, tx.id)
-        except Exception as e:
-            log.error("Ingestion error: %s", e, exc_info=True)
-            return IngestResult.invalid("?", f"internal_error: {e}")
+        except Exception:
+            log.exception("Ingestion error")
+            return IngestResult.invalid("?", "internal_error")

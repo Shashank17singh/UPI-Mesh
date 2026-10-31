@@ -1,3 +1,4 @@
+import pytest
 from app.mesh_simulator_service import MeshSimulatorService
 from app.schemas import MeshPacket
 
@@ -30,7 +31,7 @@ def test_inject_unknown_device_raises():
     mesh = MeshSimulatorService()
     try:
         mesh.inject("phone-nonexistent", _packet())
-        assert False, "expected ValueError"
+        pytest.fail("expected ValueError")
     except ValueError:
         pass
 

@@ -1,4 +1,5 @@
 import pytest
+from cryptography.exceptions import InvalidTag
 
 from app.crypto_service import HybridCryptoService, ServerKeyHolder
 from app.schemas import PaymentInstruction
@@ -43,7 +44,7 @@ def test_same_payload_encrypted_twice_has_different_ciphertext(crypto):
 def test_tampered_ciphertext_fails_to_decrypt(crypto):
     ciphertext = crypto.encrypt(_sample_instruction())
     tampered = ciphertext[:-4] + ("AAAA" if ciphertext[-4:] != "AAAA" else "BBBB")
-    with pytest.raises(Exception):
+    with pytest.raises(InvalidTag):
         crypto.decrypt(tampered)
 
 

@@ -1,3 +1,4 @@
+import pytest
 from datetime import datetime, timezone
 from decimal import Decimal
 
@@ -44,7 +45,7 @@ def test_settle_rejects_zero_or_negative_amount(db_session):
     svc = SettlementService()
     try:
         svc.settle(db_session, _instruction(0), "hash-1", "phone-bridge", 0)
-        assert False, "expected ValueError for non-positive amount"
+        pytest.fail("expected ValueError for non-positive amount")
     except ValueError:
         pass
 
@@ -59,7 +60,7 @@ def test_settle_raises_for_unknown_vpa(db_session):
             "phone-bridge",
             0,
         )
-        assert False, "expected ValueError for unknown sender"
+        pytest.fail("expected ValueError for unknown sender")
     except ValueError:
         pass
 
@@ -79,7 +80,7 @@ def test_settle_rejects_invalid_pin(db_session):
     inst.pin_hash = "wronghash"
     try:
         svc.settle(db_session, inst, "phash-3", "bridge-3", 1)
-        assert False, "Should have rejected transaction for invalid PIN"
+        pytest.fail("Should have rejected transaction for invalid PIN")
     except ValueError as e:
         assert "Invalid PIN" in str(e)
     alice = db_session.query(Account).filter_by(vpa="alice@demo").first()

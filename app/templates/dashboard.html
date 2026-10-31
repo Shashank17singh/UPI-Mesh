@@ -1,55 +1,90 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
     <meta name="darkreader-lock" />
 
     <meta charset="UTF-8" />
     <title>UPI-Mesh</title>
     <style>
+/* Hallmark · checked: 2026-10-31 · genre: modern-minimal (inferred)
+ * fixed: 42 tokens lifted, focus, motion and states added · structural: left for the owner, see the audit
+ * built: the project · redesign: polish · v2.0.0 */
+:root {
+  --field-edge: #6e7681;
+  --color-blue-800: #0f172a;
+  --color-white: #f8fafc;
+  --color-teal-400: #38bdf8;
+  --color-blue-300: #60a5fa;
+  --color-blue-700: #1e293b;
+  --color-blue-700-2: #334155;
+  --color-blue-50: #f0f6fc;
+  --color-blue-300-2: #58a6ff;
+  --color-blue-700-3: #30363d;
+  --color-blue-800-2: #161b22;
+  --color-blue-800-3: #0d1117;
+  --color-green-500: #2ea043;
+  --color-green-800: #052e16;
+  --color-grey-500: #6e7681;
+  --color-blue-800-4: #21262d;
+  --color-green-600: #238636;
+  --color-red-400: #da3633;
+  --color-red-300: #f85149;
+  --color-blue-400: #1f6feb;
+  --color-blue-400-2: #388bfd;
+  --color-blue-100: #e6edf3;
+  --color-grey-400: #8b949e;
+  --color-green-400: #56d364;
+  --color-orange-500: #d29922;
+  --color-black: #010409;
+  --color-green-300: #7ee787;
+  --font-sans: "Outfit", -apple-system, sans-serif !important;
+  --font-mono: "Consolas", "Monaco", monospace;
+  --color-on-fill: #ffffff;
+}
+
+
       @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap");
       * {
         box-sizing: border-box;
       }
       body {
-        font-family:
-          "Outfit",
-          -apple-system,
-          sans-serif !important;
+        font-family: var(--font-sans);
         margin: 0;
         padding: 24px;
-        background: #0f172a !important;
-        color: #f8fafc !important;
+        background: var(--color-blue-800) !important;
+        color: var(--color-white) !important;
       }
       h1 {
         margin-top: 0;
-        color: #38bdf8 !important;
+        color: var(--color-teal-400) !important;
         font-weight: 700;
         letter-spacing: -0.5px;
       }
       h2 {
-        color: #60a5fa !important;
-        border-bottom: 2px solid #1e293b !important;
+        color: var(--color-blue-300) !important;
+        border-bottom: 2px solid var(--color-blue-700) !important;
         padding-bottom: 8px;
         margin-top: 32px;
         font-weight: 600;
       }
       .card {
-        background: #1e293b !important;
-        border: 1px solid #334155 !important;
+        background: var(--color-blue-700) !important;
+        border: 1px solid var(--color-blue-700-2) !important;
         border-radius: 16px !important;
       }
       button {
-        font-family: "Outfit", sans-serif !important;
+        font-family: var(--font-sans);
         border-radius: 8px !important;
       }
       h1 {
         margin-top: 0;
-        color: #f0f6fc;
+        color: var(--color-blue-50);
       }
       h2 {
-        color: #58a6ff;
-        border-bottom: 1px solid #30363d;
+        color: var(--color-blue-300-2);
+        border-bottom: 1px solid var(--color-blue-700-3);
         padding-bottom: 4px;
         margin-top: 32px;
       }
@@ -68,21 +103,21 @@
         grid-template-columns: repeat(3, 1fr);
       }
       .card {
-        background: #161b22;
-        border: 1px solid #30363d;
+        background: var(--color-blue-800-2);
+        border: 1px solid var(--color-blue-700-3);
         border-radius: 8px;
         padding: 16px;
       }
       .device {
-        border: 1px solid #30363d;
+        border: 1px solid var(--color-blue-700-3);
         border-radius: 6px;
         padding: 12px;
         margin-bottom: 8px;
-        background: #0d1117;
+        background: var(--color-blue-800-3);
       }
       .device.bridge {
-        border-color: #2ea043;
-        background: #052e16;
+        border-color: var(--color-green-500);
+        background: var(--color-green-800);
       }
       .device.offline {
         opacity: 0.85;
@@ -96,25 +131,25 @@
         margin-left: 8px;
       }
       .badge-online {
-        background: #2ea043;
-        color: white;
+        background: var(--color-green-500);
+        color: var(--color-on-fill);
       }
       .badge-offline {
-        background: #6e7681;
-        color: white;
+        background: var(--color-grey-500);
+        color: var(--color-on-fill);
       }
       .packet-id {
-        font-family: "Consolas", "Monaco", monospace;
+        font-family: var(--font-mono);
         font-size: 11px;
-        background: #21262d;
+        background: var(--color-blue-800-4);
         padding: 2px 6px;
         border-radius: 3px;
         margin: 2px;
         display: inline-block;
       }
       button {
-        background: #238636;
-        color: white;
+        background: var(--color-green-600);
+        color: var(--color-on-fill);
         border: none;
         padding: 8px 16px;
         border-radius: 6px;
@@ -124,25 +159,25 @@
         margin: 4px;
       }
       button:hover {
-        background: #2ea043;
+        background: var(--color-green-500);
       }
       button.danger {
-        background: #da3633;
+        background: var(--color-red-400);
       }
       button.danger:hover {
-        background: #f85149;
+        background: var(--color-red-300);
       }
       button.secondary {
-        background: #1f6feb;
+        background: var(--color-blue-400);
       }
       button.secondary:hover {
-        background: #388bfd;
+        background: var(--color-blue-400-2);
       }
       input,
       select {
-        background: #0d1117;
-        color: #e6edf3;
-        border: 1px solid #30363d;
+        background: var(--color-blue-800-3);
+        color: var(--color-blue-100);
+        border: 1px solid var(--color-blue-700-3);
         border-radius: 4px;
         padding: 6px 10px;
         font-size: 14px;
@@ -157,53 +192,52 @@
       td {
         text-align: left;
         padding: 8px;
-        border-bottom: 1px solid #30363d;
+        border-bottom: 1px solid var(--color-blue-700-3);
       }
       th {
-        color: #8b949e;
+        color: var(--color-grey-400);
         font-weight: 600;
         font-size: 12px;
-        text-transform: uppercase;
       }
       .status-SETTLED {
-        color: #56d364;
+        color: var(--color-green-400);
         font-weight: 600;
       }
       .status-REJECTED {
-        color: #f85149;
+        color: var(--color-red-300);
         font-weight: 600;
       }
       .status-DUPLICATE_DROPPED {
-        color: #d29922;
+        color: var(--color-orange-500);
         font-weight: 600;
       }
       .status-INVALID {
-        color: #f85149;
+        color: var(--color-red-300);
         font-weight: 600;
       }
       #log {
-        background: #010409;
-        color: #7ee787;
+        background: var(--color-black);
+        color: var(--color-green-300);
         padding: 12px;
         border-radius: 6px;
-        font-family: "Consolas", "Monaco", monospace;
+        font-family: var(--font-mono);
         font-size: 12px;
         max-height: 220px;
         overflow-y: auto;
         white-space: pre-wrap;
-        border: 1px solid #30363d;
+        border: 1px solid var(--color-blue-700-3);
       }
       .controls {
-        background: #161b22;
+        background: var(--color-blue-800-2);
         padding: 16px;
         border-radius: 8px;
-        border: 1px solid #30363d;
+        border: 1px solid var(--color-blue-700-3);
         margin-bottom: 16px;
       }
       .step-num {
         display: inline-block;
-        background: #58a6ff;
-        color: white;
+        background: var(--color-blue-300-2);
+        color: var(--color-on-fill);
         border-radius: 50%;
         width: 24px;
         height: 24px;
@@ -213,15 +247,80 @@
         margin-right: 8px;
       }
       .balance {
-        font-family: "Consolas", monospace;
-        color: #56d364;
+        font-family: var(--font-mono);
+        color: var(--color-green-400);
         font-weight: 600;
       }
       .small {
         font-size: 12px;
-        color: #8b949e;
+        color: var(--color-grey-400);
       }
-    </style>
+
+/* Accessibility states added by the polish pass. */
+:root {
+  --focus-ring: #e2e8f0;
+  --disabled-fill: #2a2f3a;
+  --disabled-ink: #8b93a1;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible + label {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  background: var(--disabled-fill);
+  color: var(--disabled-ink);
+  cursor: not-allowed;
+}
+
+input,
+select {
+  border-color: var(--field-edge);
+}
+
+@media (max-width: 600px) {
+  table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
   </head>
   <body>
     <div class="container">
@@ -239,22 +338,22 @@
           ><strong>Compose payment</strong> (simulates sender and receiver
           phone)
           <br />
-          <select id="senderVpa">
+          <select aria-label="senderVpa" id="senderVpa">
             <option>alice@demo</option>
             <option>bob@demo</option>
             <option>carol@demo</option>
             <option>dave@demo</option>
           </select>
           →
-          <select id="receiverVpa">
+          <select aria-label="receiverVpa" id="receiverVpa">
             <option>bob@demo</option>
             <option>carol@demo</option>
             <option>alice@demo</option>
             <option>dave@demo</option>
           </select>
-          ₹<input type="number" id="amount" value="500" style="width: 100px" />
+          ₹<input aria-label="amount" type="number" id="amount" value="500" style="width: 100px" />
           PIN
-          <input
+          <input aria-label="pin"
             type="text"
             id="pin"
             value="1234"

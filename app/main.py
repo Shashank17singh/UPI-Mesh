@@ -31,6 +31,7 @@ logging.basicConfig(
 
 IDEMPOTENCY_TTL_SECONDS = 86400
 PACKET_MAX_AGE_SECONDS = 86400
+BRIDGE_ID_PATTERN = r"^[A-Za-z0-9._-]{1,64}$"
 server_key = ServerKeyHolder()
 crypto = HybridCryptoService(server_key)
 idempotency = IdempotencyService(ttl_seconds=IDEMPOTENCY_TTL_SECONDS)
@@ -159,7 +160,7 @@ def mesh_reset():
 @app.post("/api/bridge/ingest")
 def ingest(
     packet: MeshPacket,
-    x_bridge_node_id: str = Header(default="unknown"),
+    x_bridge_node_id: str = Header(default="unknown", pattern=BRIDGE_ID_PATTERN),
     x_hop_count: int = Header(default=0),
     db: Session = Depends(get_db),
 ):

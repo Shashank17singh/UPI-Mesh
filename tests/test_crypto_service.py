@@ -53,6 +53,19 @@ def test_hash_ciphertext_is_deterministic(crypto):
     assert crypto.hash_ciphertext(ciphertext) == crypto.hash_ciphertext(ciphertext)
 
 
+def test_altered_base64_is_rejected_rather_than_decoded(crypto):
+    ciphertext = crypto.encrypt(_sample_instruction())
+    with pytest.raises(ValueError):
+        crypto.decrypt(ciphertext[:8] + "!" + ciphertext[8:])
+    with pytest.raises(ValueError):
+        crypto.hash_ciphertext(ciphertext + "\n")
+
+
+def test_two_spellings_of_the_same_bytes_share_a_hash(crypto):
+    """The spare bits at the end of base64 are ignored, so both of these decode to b"abcd"."""
+    assert crypto.hash_ciphertext("YWJjZA==") == crypto.hash_ciphertext("YWJjZB==")
+
+
 def test_hash_ciphertext_differs_for_different_input(crypto):
     c1 = crypto.encrypt(_sample_instruction())
     c2 = crypto.encrypt(_sample_instruction())

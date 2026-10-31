@@ -55,6 +55,7 @@ class SettlementService:
         receiver.balance += amount
         tx = Transaction(
             packet_hash=packet_hash,
+            nonce=instruction.nonce,
             sender_vpa=instruction.sender_vpa,
             receiver_vpa=instruction.receiver_vpa,
             amount=amount,
@@ -94,6 +95,7 @@ class SettlementService:
     ) -> Transaction:
         tx = Transaction(
             packet_hash=packet_hash,
+            nonce=instruction.nonce,
             sender_vpa=instruction.sender_vpa,
             receiver_vpa=instruction.receiver_vpa,
             amount=Decimal(str(instruction.amount)),

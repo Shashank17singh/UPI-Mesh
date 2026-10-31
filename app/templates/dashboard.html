@@ -444,6 +444,13 @@ select {
           el.textContent;
       }
 
+      // Every value below reaches the page through innerHTML, and some come from
+      // unauthenticated request headers.
+      function esc(value) {
+        const escapes = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
+        return String(value).replace(/[&<>"']/g, (c) => escapes[c]);
+      }
+
       async function refresh() {
         // Mesh state
         const m = await fetch("/api/mesh/state").then((r) => r.json());
@@ -452,12 +459,12 @@ select {
           .map(
             (d) => `
         <div class="device ${d.hasInternet ? "bridge" : "offline"}">
-            <strong>${d.deviceId}</strong>
+            <strong>${esc(d.deviceId)}</strong>
             <span class="badge ${d.hasInternet ? "badge-online" : "badge-offline"}">
                 ${d.hasInternet ? "ONLINE" : "OFFLINE"}
             </span>
-            <span class="small">holding ${d.packetCount} packet(s)</span>
-            <div>${d.packetIds.map((id) => `<span class="packet-id">${id}</span>`).join("")}</div>
+            <span class="small">holding ${esc(d.packetCount)} packet(s)</span>
+            <div>${d.packetIds.map((id) => `<span class="packet-id">${esc(id)}</span>`).join("")}</div>
         </div>
     `,
           )
@@ -470,7 +477,7 @@ select {
         document.querySelector("#accounts-table tbody").innerHTML = accs
           .map(
             (a) => `
-        <tr><td>${a.vpa}</td><td>${a.holderName}</td>
+        <tr><td>${esc(a.vpa)}</td><td>${esc(a.holderName)}</td>
             <td class="balance">₹${parseFloat(a.balance).toFixed(2)}</td></tr>
     `,
           )
@@ -482,10 +489,10 @@ select {
           .map(
             (t) => `
         <tr>
-            <td>${t.id}</td><td>${t.senderVpa}</td><td>${t.receiverVpa}</td>
+            <td>${esc(t.id)}</td><td>${esc(t.senderVpa)}</td><td>${esc(t.receiverVpa)}</td>
             <td class="balance">₹${parseFloat(t.amount).toFixed(2)}</td>
-            <td class="status-${t.status}">${t.status}</td>
-            <td>${t.bridgeNodeId}</td><td>${t.hopCount}</td>
+            <td class="status-${esc(t.status)}">${esc(t.status)}</td>
+            <td>${esc(t.bridgeNodeId)}</td><td>${esc(t.hopCount)}</td>
             <td class="small">${new Date(t.settledAt).toLocaleTimeString()}</td>
         </tr>
     `,

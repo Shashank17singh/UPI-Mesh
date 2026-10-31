@@ -65,7 +65,7 @@ class HybridCryptoService:
         return base64.b64encode(packed).decode()
 
     def decrypt(self, base64_ciphertext: str) -> PaymentInstruction:
-        all_bytes = base64.b64decode(base64_ciphertext)
+        all_bytes = self._decode(base64_ciphertext)
         min_len = RSA_ENCRYPTED_KEY_BYTES + GCM_IV_BYTES + 16
         if len(all_bytes) < min_len:
             raise ValueError("Ciphertext too short")
@@ -77,6 +77,13 @@ class HybridCryptoService:
         plaintext = aesgcm.decrypt(iv, aes_ciphertext, None)
         return PaymentInstruction(**json.loads(plaintext))
 
+    @classmethod
+    def hash_ciphertext(cls, base64_ciphertext: str) -> str:
+        """Hash the decoded bytes. One ciphertext has many base64 spellings, so hashing
+        the text would let a relay replay a packet under a new idempotency key."""
+        return hashlib.sha256(cls._decode(base64_ciphertext)).hexdigest()
+
     @staticmethod
-    def hash_ciphertext(base64_ciphertext: str) -> str:
-        return hashlib.sha256(base64_ciphertext.encode()).hexdigest()
+    def _decode(base64_ciphertext: str) -> bytes:
+        """Decode strictly: the default decoder silently skips non-alphabet characters."""
+        return base64.b64decode(base64_ciphertext, validate=True)

@@ -6,6 +6,7 @@ import logging
 import time
 from dataclasses import dataclass
 
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.crypto_service import HybridCryptoService
@@ -58,7 +59,10 @@ class BridgeIngestionService:
         time-to-live constraints, and delegates to the settlement ledger.
         """
         try:
-            packet_hash = self.crypto.hash_ciphertext(packet.ciphertext)
+            try:
+                packet_hash = self.crypto.hash_ciphertext(packet.ciphertext)
+            except ValueError:
+                return IngestResult.invalid("?", "malformed_ciphertext")
 
             if not self.idempotency.claim(packet_hash):
                 log.info(
@@ -91,6 +95,12 @@ class BridgeIngestionService:
                 db, instruction, packet_hash, bridge_node_id, hop_count
             )
             return IngestResult.settled(packet_hash, tx.id)
+        except IntegrityError:
+            # The ledger already holds this packet or payment nonce, even if the
+            # in-memory cache has since been cleared.
+            db.rollback()
+            log.warning("Replayed payment %s... dropped by the ledger", packet_hash[:12])
+            return IngestResult.duplicate(packet_hash)
         except Exception:
             log.exception("Ingestion error")
             return IngestResult.invalid("?", "internal_error")

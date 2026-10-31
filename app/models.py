@@ -37,6 +37,7 @@ class Transaction(Base):
     __tablename__ = "transactions"
     id = Column(Integer, primary_key=True, autoincrement=True)
     packet_hash = Column(String(64), nullable=False, unique=True, index=True)
+    nonce = Column(String(64), nullable=False, unique=True, index=True)
     sender_vpa = Column(String, nullable=False)
     receiver_vpa = Column(String, nullable=False)
     amount = Column(Numeric(19, 2), nullable=False)

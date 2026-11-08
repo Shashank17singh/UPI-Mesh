@@ -1,435 +1,311 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark" />
     <meta name="darkreader-lock" />
-
-    <meta charset="UTF-8" />
-    <title>UPI-Mesh</title>
+    <title>UPI Mesh</title>
+    <meta name="description" content="Live demo of UPI Mesh: offline payments relayed over a simulated Bluetooth mesh, encrypted on the phone and settled exactly once." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
     <style>
-/* Hallmark · checked: 2026-10-31 · genre: modern-minimal (inferred)
- * fixed: 42 tokens lifted, focus, motion and states added · structural: left for the owner, see the audit
- * built: the project · redesign: polish · v2.0.0 */
+/* Hallmark · redesign: 2026-11-08 · genre: modern-minimal · system: ui-ux-pro-max Swiss minimal, dense dashboard (slate, one green for "run")
+ * critique: one control panel that reads as three numbered steps, then state (devices, balances), then the record (ledger, log). Labels above every field.
+ * built: the project · v2.0.0 */
 :root {
-  --field-edge: #6e7681;
-  --color-blue-800: #0f172a;
-  --color-white: #f8fafc;
-  --color-teal-400: #38bdf8;
-  --color-blue-300: #60a5fa;
-  --color-blue-700: #1e293b;
-  --color-blue-700-2: #334155;
-  --color-blue-50: #f0f6fc;
-  --color-blue-300-2: #58a6ff;
-  --color-blue-700-3: #30363d;
-  --color-blue-800-2: #161b22;
-  --color-blue-800-3: #0d1117;
-  --color-green-500: #2ea043;
-  --color-green-800: #052e16;
-  --color-grey-500: #6e7681;
-  --color-blue-800-4: #21262d;
-  --color-green-600: #238636;
-  --color-red-400: #da3633;
-  --color-red-300: #f85149;
-  --color-blue-400: #1f6feb;
-  --color-blue-400-2: #388bfd;
-  --color-blue-100: #e6edf3;
-  --color-grey-400: #8b949e;
-  --color-green-400: #56d364;
-  --color-orange-500: #d29922;
-  --color-black: #010409;
-  --color-green-300: #7ee787;
-  --font-sans: "Outfit", -apple-system, sans-serif !important;
-  --font-mono: "Consolas", "Monaco", monospace;
-  --color-on-fill: #ffffff;
+  color-scheme: dark;
+  --bg: oklch(19% 0.03 255);
+  --surface: oklch(22.5% 0.03 255);
+  --surface-2: oklch(27% 0.032 255);
+  --inset: oklch(16.5% 0.028 255);
+  --line: oklch(33% 0.035 255);
+  --line-strong: oklch(44% 0.035 255);
+  --ink: oklch(96.5% 0.006 255);
+  --ink-2: oklch(87% 0.015 255);
+  --muted: oklch(72% 0.025 255);
+  --run: oklch(74% 0.17 150);
+  --run-hover: oklch(80% 0.16 150);
+  --on-run: oklch(18% 0.03 255);
+  --signal: oklch(78% 0.12 230);
+  --signal-soft: oklch(28% 0.06 235);
+  --ok: oklch(80% 0.16 150);
+  --ok-soft: oklch(25% 0.05 155);
+  --warn: oklch(83% 0.15 80);
+  --bad: oklch(72% 0.16 22);
+  --bad-soft: oklch(28% 0.07 20);
+  --focus: oklch(97% 0.005 255);
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  --radius: 10px;
+  --radius-sm: 6px;
 }
 
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+[hidden] { display: none !important; }
 
-      @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap");
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        font-family: var(--font-sans);
-        margin: 0;
-        padding: 24px;
-        background: var(--color-blue-800) !important;
-        color: var(--color-white) !important;
-      }
-      h1 {
-        margin-top: 0;
-        color: var(--color-teal-400) !important;
-        font-weight: 700;
-        letter-spacing: -0.5px;
-      }
-      h2 {
-        color: var(--color-blue-300) !important;
-        border-bottom: 2px solid var(--color-blue-700) !important;
-        padding-bottom: 8px;
-        margin-top: 32px;
-        font-weight: 600;
-      }
-      .card {
-        background: var(--color-blue-700) !important;
-        border: 1px solid var(--color-blue-700-2) !important;
-        border-radius: 16px !important;
-      }
-      button {
-        font-family: var(--font-sans);
-        border-radius: 8px !important;
-      }
-      h1 {
-        margin-top: 0;
-        color: var(--color-blue-50);
-      }
-      h2 {
-        color: var(--color-blue-300-2);
-        border-bottom: 1px solid var(--color-blue-700-3);
-        padding-bottom: 4px;
-        margin-top: 32px;
-      }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-      }
-      .grid {
-        display: grid;
-        gap: 16px;
-      }
-      .grid-2 {
-        grid-template-columns: 1fr 1fr;
-      }
-      .grid-3 {
-        grid-template-columns: repeat(3, 1fr);
-      }
-      .card {
-        background: var(--color-blue-800-2);
-        border: 1px solid var(--color-blue-700-3);
-        border-radius: 8px;
-        padding: 16px;
-      }
-      .device {
-        border: 1px solid var(--color-blue-700-3);
-        border-radius: 6px;
-        padding: 12px;
-        margin-bottom: 8px;
-        background: var(--color-blue-800-3);
-      }
-      .device.bridge {
-        border-color: var(--color-green-500);
-        background: var(--color-green-800);
-      }
-      .device.offline {
-        opacity: 0.85;
-      }
-      .badge {
-        display: inline-block;
-        font-size: 11px;
-        padding: 2px 8px;
-        border-radius: 10px;
-        font-weight: 600;
-        margin-left: 8px;
-      }
-      .badge-online {
-        background: var(--color-green-500);
-        color: var(--color-on-fill);
-      }
-      .badge-offline {
-        background: var(--color-grey-500);
-        color: var(--color-on-fill);
-      }
-      .packet-id {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        background: var(--color-blue-800-4);
-        padding: 2px 6px;
-        border-radius: 3px;
-        margin: 2px;
-        display: inline-block;
-      }
-      button {
-        background: var(--color-green-600);
-        color: var(--color-on-fill);
-        border: none;
-        padding: 8px 16px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-size: 14px;
-        font-weight: 500;
-        margin: 4px;
-      }
-      button:hover {
-        background: var(--color-green-500);
-      }
-      button.danger {
-        background: var(--color-red-400);
-      }
-      button.danger:hover {
-        background: var(--color-red-300);
-      }
-      button.secondary {
-        background: var(--color-blue-400);
-      }
-      button.secondary:hover {
-        background: var(--color-blue-400-2);
-      }
-      input,
-      select {
-        background: var(--color-blue-800-3);
-        color: var(--color-blue-100);
-        border: 1px solid var(--color-blue-700-3);
-        border-radius: 4px;
-        padding: 6px 10px;
-        font-size: 14px;
-        margin: 4px;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-      }
-      th,
-      td {
-        text-align: left;
-        padding: 8px;
-        border-bottom: 1px solid var(--color-blue-700-3);
-      }
-      th {
-        color: var(--color-grey-400);
-        font-weight: 600;
-        font-size: 12px;
-      }
-      .status-SETTLED {
-        color: var(--color-green-400);
-        font-weight: 600;
-      }
-      .status-REJECTED {
-        color: var(--color-red-300);
-        font-weight: 600;
-      }
-      .status-DUPLICATE_DROPPED {
-        color: var(--color-orange-500);
-        font-weight: 600;
-      }
-      .status-INVALID {
-        color: var(--color-red-300);
-        font-weight: 600;
-      }
-      #log {
-        background: var(--color-black);
-        color: var(--color-green-300);
-        padding: 12px;
-        border-radius: 6px;
-        font-family: var(--font-mono);
-        font-size: 12px;
-        max-height: 220px;
-        overflow-y: auto;
-        white-space: pre-wrap;
-        border: 1px solid var(--color-blue-700-3);
-      }
-      .controls {
-        background: var(--color-blue-800-2);
-        padding: 16px;
-        border-radius: 8px;
-        border: 1px solid var(--color-blue-700-3);
-        margin-bottom: 16px;
-      }
-      .step-num {
-        display: inline-block;
-        background: var(--color-blue-300-2);
-        color: var(--color-on-fill);
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        text-align: center;
-        line-height: 24px;
-        font-weight: 600;
-        margin-right: 8px;
-      }
-      .balance {
-        font-family: var(--font-mono);
-        color: var(--color-green-400);
-        font-weight: 600;
-      }
-      .small {
-        font-size: 12px;
-        color: var(--color-grey-400);
-      }
-
-/* Accessibility states added by the polish pass. */
-:root {
-  --focus-ring: #e2e8f0;
-  --disabled-fill: #2a2f3a;
-  --disabled-ink: #8b93a1;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-html,
 body {
-  overflow-x: clip;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 400 15px/1.55 var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-summary:focus-visible,
-[tabindex]:focus-visible,
-[role="button"]:focus-visible,
-input:focus-visible + label {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px 64px; }
+
+/* Header */
+.masthead {
+  display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px;
+  padding: 40px 0 28px; border-bottom: 1px solid var(--line); margin-bottom: 24px;
+}
+.masthead h1 { text-wrap: balance; margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.02em; }
+.masthead p { margin: 8px 0 0; max-width: 60ch; color: var(--ink-2); }
+.masthead .meta { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+
+h2 { text-wrap: balance; margin: 0 0 16px; font-size: 16px; font-weight: 600; color: var(--ink); }
+.small { font-size: 13px; color: var(--muted); }
+
+/* Panels */
+.card, .controls {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 20px;
+  color: var(--ink);
+  min-width: 0;
+}
+.controls { margin-bottom: 16px; }
+.controls__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.controls__head h2 { margin: 0; }
+
+.steps { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.step {
+  display: grid; align-content: start; gap: 12px;
+  padding: 16px; background: var(--inset); border: 1px solid var(--line); border-radius: var(--radius-sm);
+}
+.step__title { display: flex; align-items: center; gap: 12px; font-weight: 600; }
+.step__title + p { margin: -4px 0 0; }
+.step-num {
+  display: inline-grid; place-items: center; flex: none;
+  width: 24px; height: 24px; border-radius: 50%;
+  background: var(--signal-soft); color: var(--signal);
+  font: 500 13px/1 var(--font-mono);
 }
 
-button:active:not(:disabled) {
-  transform: translateY(1px);
+.grid { display: grid; gap: 16px; }
+.grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.stack { margin-top: 16px; }
+
+/* Fields */
+.fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; align-items: end; }
+.field { display: grid; gap: 8px; min-width: 0; }
+.field label { font-size: 13px; color: var(--ink-2); }
+input, select {
+  width: 100%; min-height: 40px;
+  background: var(--surface-2); color: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  padding: 8px 12px; font: 400 14px/1.2 var(--font-sans);
+}
+input:hover, select:hover { border-color: var(--muted); }
+input[type="number"], #pin { font-family: var(--font-mono); }
+
+/* Buttons */
+button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 40px; padding: 0 16px; margin: 0;
+  border: 1px solid transparent; border-radius: var(--radius-sm);
+  background: var(--run); color: var(--on-run);
+  font: 600 14px/1 var(--font-sans); cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, transform 80ms ease;
+}
+button:hover { background: var(--run-hover); }
+button.secondary { background: var(--surface-2); color: var(--ink); border-color: var(--line-strong); }
+button.secondary:hover { background: var(--line); }
+button.danger { background: transparent; color: var(--bad); border-color: var(--bad-soft); }
+button.danger:hover { background: var(--bad-soft); }
+button:active:not(:disabled) { transform: translateY(1px); }
+button:disabled { background: var(--surface-2); color: var(--muted); border-color: var(--line); cursor: not-allowed; }
+.step button { justify-self: start; }
+
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
 }
 
-button:disabled,
-input:disabled,
-select:disabled,
-textarea:disabled {
-  background: var(--disabled-fill);
-  color: var(--disabled-ink);
-  cursor: not-allowed;
+/* Devices */
+#devices { display: grid; gap: 8px; }
+.device {
+  padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--inset);
+}
+.device strong { font-family: var(--font-mono); font-size: 14px; font-weight: 500; }
+.device.bridge { border-color: color-mix(in srgb, var(--ok) 45%, var(--line)); background: var(--ok-soft); }
+.device > div { margin-top: 8px; }
+.badge {
+  display: inline-block; margin: 0 8px; padding: 1px 8px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; vertical-align: 1px;
+}
+.badge-online { background: var(--ok-soft); color: var(--ok); border: 1px solid color-mix(in srgb, var(--ok) 40%, transparent); }
+.badge-offline { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.packet-id {
+  display: inline-block; margin: 4px 4px 0 0; padding: 4px 8px; border-radius: 4px;
+  background: var(--surface-2); color: var(--ink-2); font: 400 12px/1.4 var(--font-mono);
 }
 
-input,
-select {
-  border-color: var(--field-edge);
+/* Tables */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { text-align: left; padding: 12px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { color: var(--muted); font-size: 13px; font-weight: 500; }
+tbody tr:hover { background: var(--surface-2); }
+tbody tr:last-child td { border-bottom: 0; }
+td:first-child { font-family: var(--font-mono); font-size: 13px; }
+.balance { font-family: var(--font-mono); color: var(--ink); font-weight: 500; text-align: right; }
+th.num { text-align: right; }
+.status-SETTLED { color: var(--ok); font-weight: 500; }
+.status-REJECTED, .status-INVALID { color: var(--bad); font-weight: 500; }
+.status-DUPLICATE_DROPPED { color: var(--warn); font-weight: 500; }
+tbody:empty::after {
+  content: "Nothing yet. Run the three steps above."; display: block; padding: 12px 8px; color: var(--muted); font-size: 13px;
 }
 
+/* Log */
+#log {
+  min-height: 120px; max-height: 240px; overflow-y: auto; white-space: pre-wrap;
+  padding: 12px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--inset); color: var(--ink-2); font: 400 12.5px/1.6 var(--font-mono);
+}
+#log:empty::before { content: "Events appear here as packets move."; color: var(--muted); }
+
+@media (max-width: 960px) {
+  .steps { grid-template-columns: minmax(0, 1fr); }
+  .grid-2 { grid-template-columns: minmax(0, 1fr); }
+}
 @media (max-width: 600px) {
-  table {
-    display: block;
-    overflow-x: auto;
-  }
+  .container { padding: 0 16px 48px; }
+  .fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .masthead { padding-top: 28px; }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-  }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }
-</style>
+    </style>
   </head>
   <body>
     <div class="container">
-      <h1>UPI-Mesh</h1>
-      <p class="small">
-        Send money in a basement with zero internet. Encrypted packets gossip
-        from phone to phone until one with Internet reaches the backend.
-      </p>
-
-      <div class="controls">
-        <h3 style="margin-top: 0">Demo Flow</h3>
-
+      <header class="masthead">
         <div>
-          <span class="step-num">1</span
-          ><strong>Compose payment</strong> (simulates sender and receiver
-          phone)
-          <br />
-          <select aria-label="senderVpa" id="senderVpa">
-            <option>alice@demo</option>
-            <option>bob@demo</option>
-            <option>carol@demo</option>
-            <option>dave@demo</option>
-          </select>
-          →
-          <select aria-label="receiverVpa" id="receiverVpa">
-            <option>bob@demo</option>
-            <option>carol@demo</option>
-            <option>alice@demo</option>
-            <option>dave@demo</option>
-          </select>
-          ₹<input aria-label="amount" type="number" id="amount" value="500" style="width: 100px" />
-          PIN
-          <input aria-label="pin"
-            type="text"
-            id="pin"
-            value="1234"
-            style="width: 80px"
-            maxlength="4"
-          />
-          <button onclick="sendPacket()">Inject into Mesh</button>
+          <h1>UPI Mesh</h1>
+          <p>Send money with no internet. Encrypted packets hop from phone to phone until one with a connection reaches the bank, and each payment settles exactly once.</p>
+        </div>
+        <span class="meta">Hybrid encryption, idempotent settlement</span>
+      </header>
+
+      <section class="controls" aria-labelledby="demo-title">
+        <div class="controls__head">
+          <h2 id="demo-title">Run the demo</h2>
+          <button class="danger" onclick="resetMesh()">Reset mesh and cache</button>
         </div>
 
-        <div style="margin-top: 16px">
-          <span class="step-num">2</span><strong>Gossip</strong> - packets hop
-          device-to-device
-          <button class="secondary" onclick="gossip()">Run Gossip Round</button>
-        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step__title"><span class="step-num">1</span>Compose a payment</div>
+            <p class="small">Signed and encrypted on the sender’s phone, then dropped into the mesh.</p>
+            <div class="fields">
+              <div class="field">
+                <label for="senderVpa">From</label>
+                <select id="senderVpa">
+                  <option>alice@demo</option>
+                  <option>bob@demo</option>
+                  <option>carol@demo</option>
+                  <option>dave@demo</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="receiverVpa">To</label>
+                <select id="receiverVpa">
+                  <option>bob@demo</option>
+                  <option>carol@demo</option>
+                  <option>alice@demo</option>
+                  <option>dave@demo</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="amount">Amount (₹)</label>
+                <input type="number" id="amount" value="500" min="1" inputmode="decimal" />
+              </div>
+              <div class="field">
+                <label for="pin">PIN</label>
+                <input type="text" id="pin" value="1234" maxlength="4" inputmode="numeric" autocomplete="off" />
+              </div>
+            </div>
+            <button onclick="sendPacket()">Inject into mesh</button>
+          </div>
 
-        <div style="margin-top: 16px">
-          <span class="step-num">3</span
-          ><strong>Bridge node walks outside, connects to Internet</strong>
-          <button class="secondary" onclick="flushBridges()">
-            Bridges Upload to Backend
-          </button>
-          <span class="small">(parallel - exercises idempotency)</span>
-        </div>
+          <div class="step">
+            <div class="step__title"><span class="step-num">2</span>Gossip</div>
+            <p class="small">Every phone passes the packets it holds to its neighbours.</p>
+            <button class="secondary" onclick="gossip()">Run a gossip round</button>
+          </div>
 
-        <div style="margin-top: 16px">
-          <button class="danger" onclick="resetMesh()">
-            Reset Mesh + Cache
-          </button>
+          <div class="step">
+            <div class="step__title"><span class="step-num">3</span>Bridge to the bank</div>
+            <p class="small">Phones with internet upload in parallel, so the same payment arrives more than once.</p>
+            <button class="secondary" onclick="flushBridges()">Upload from bridges</button>
+          </div>
         </div>
-      </div>
+      </section>
 
       <div class="grid grid-2">
-        <div class="card">
-          <h2>Mesh Devices</h2>
+        <section class="card" aria-labelledby="devices-title">
+          <h2 id="devices-title">Mesh devices</h2>
           <div id="devices"></div>
-        </div>
+        </section>
 
-        <div class="card">
-          <h2>Account Balances</h2>
-          <table id="accounts-table">
+        <section class="card" aria-labelledby="accounts-title">
+          <h2 id="accounts-title">Account balances</h2>
+          <div class="table-wrap">
+            <table id="accounts-table">
+              <thead>
+                <tr>
+                  <th>VPA</th>
+                  <th>Holder</th>
+                  <th class="num">Balance</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <p class="small" id="cacheInfo"></p>
+        </section>
+      </div>
+
+      <section class="card stack" aria-labelledby="ledger-title">
+        <h2 id="ledger-title">Transaction ledger</h2>
+        <div class="table-wrap">
+          <table id="tx-table">
             <thead>
               <tr>
-                <th>VPA</th>
-                <th>Holder</th>
-                <th>Balance</th>
+                <th>ID</th>
+                <th>From</th>
+                <th>To</th>
+                <th class="num">Amount</th>
+                <th>Status</th>
+                <th>Bridge</th>
+                <th>Hops</th>
+                <th>Settled</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
-          <p class="small" id="cacheInfo"></p>
         </div>
-      </div>
+      </section>
 
-      <div class="card" style="margin-top: 16px">
-        <h2>Transaction Ledger</h2>
-        <table id="tx-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>From</th>
-              <th>To</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Bridge</th>
-              <th>Hops</th>
-              <th>Settled</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-
-      <div class="card" style="margin-top: 16px">
-        <h2>Activity Log</h2>
-        <div id="log"></div>
-      </div>
+      <section class="card stack" aria-labelledby="log-title">
+        <h2 id="log-title">Activity log</h2>
+        <div id="log" role="log" aria-live="polite"></div>
+      </section>
     </div>
 
     <script>
@@ -461,7 +337,7 @@ select {
         <div class="device ${d.hasInternet ? "bridge" : "offline"}">
             <strong>${esc(d.deviceId)}</strong>
             <span class="badge ${d.hasInternet ? "badge-online" : "badge-offline"}">
-                ${d.hasInternet ? "ONLINE" : "OFFLINE"}
+                ${d.hasInternet ? "Online" : "Offline"}
             </span>
             <span class="small">holding ${esc(d.packetCount)} packet(s)</span>
             <div>${d.packetIds.map((id) => `<span class="packet-id">${esc(id)}</span>`).join("")}</div>

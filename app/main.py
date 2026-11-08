@@ -74,7 +74,8 @@ templates = Jinja2Templates(directory="app/templates")
 
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    # Request-first form: the old (name, {"request": ...}) form breaks on Starlette 1.x.
+    return templates.TemplateResponse(request, "dashboard.html")
 
 
 @app.get("/api/server-key")

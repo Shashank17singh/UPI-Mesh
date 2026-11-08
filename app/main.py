@@ -8,6 +8,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
+from datetime import timezone
 
 from fastapi import Depends, FastAPI, Header, Request
 from fastapi.responses import HTMLResponse
@@ -190,7 +191,8 @@ def list_transactions(db: Session = Depends(get_db)):
             "status": t.status.value,
             "bridgeNodeId": t.bridge_node_id,
             "hopCount": t.hop_count,
-            "settledAt": t.settled_at.isoformat(),
+            # SQLite drops the zone; times are stored in UTC, so say so.
+            "settledAt": t.settled_at.replace(tzinfo=timezone.utc).isoformat(),
         }
         for t in txs
     ]

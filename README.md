@@ -1,17 +1,6 @@
-<div align="center">
+# UPI Mesh
 
-# UPI-Mesh - Offline-First Payments over a Bluetooth Mesh
-
-**A payment backend that settles UPI-style transactions with zero internet - hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard**
-
-[![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-[![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-ORM-D71F00?style=for-the-badge&logo=python&logoColor=white)](https://www.sqlalchemy.org/)
-[![Cryptography](https://img.shields.io/badge/RSA%2FAES--GCM-Hybrid%20Encryption-4B8BBE?style=for-the-badge&logoColor=white)](https://cryptography.io/)
-
-</div>
-
----
+A payment backend that settles UPI-style transactions with zero internet, hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard.
 
 ## Overview
 

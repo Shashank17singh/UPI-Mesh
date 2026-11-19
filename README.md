@@ -1,28 +1,22 @@
 # UPI Mesh
 
-A payment backend that settles UPI-style transactions with zero internet, hybrid RSA/AES-GCM encryption, a Bluetooth mesh simulator, and idempotent settlement, served through a FastAPI dashboard.
+An offline-first payment backend that settles UPI-style transactions without internet connectivity using hybrid RSA/AES encryption, a simulated Bluetooth mesh, and idempotent settlement.
+
+> **Live Deployments:**
+> * **Interactive API Documentation:** [upi-mesh.duckdns.org/docs](https://upi-mesh.duckdns.org/docs)
+> * **Mesh Simulator Dashboard:** [upi-mesh.duckdns.org](https://upi-mesh.duckdns.org/)
+
+---
 
 ## Overview
 
-An offline-first payment backend that settles UPI-style transactions without internet connectivity. It relies on a simulated Bluetooth mesh network and hybrid RSA/AES cryptography, with idempotent settlement and a secure offline ledger.
+UPI Mesh solves the critical last-mile offline connectivity problem in digital payment rails. When users are offline (rural regions, crowded transit, disasters, or connectivity blackouts), transactions are signed, encrypted with RSA-2048 + AES-256-GCM hybrid encryption, and hopped peer-to-peer across adjacent devices over a simulated Bluetooth mesh. 
+
+As soon as any intermediate device reconnects to cellular data or Wi-Fi, it securely bridges queued payloads to the FastAPI backend, where ciphertext hashing, strict freshness checks, and optimistic database locking guarantee exactly-once settlement.
 
 ---
 
-## Pipeline
-
-| Stage               | What Happens                                                                                                                                                      |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Encrypt**         | The sender's phone wraps the payment in RSA-2048 (OAEP/SHA-256) + AES-256-GCM hybrid encryption before it ever leaves the device                                  |
-| **Gossip**          | Simulated phones relay the encrypted packet to each other over Bluetooth, decrementing a TTL each hop                                                             |
-| **Bridge**          | Once a phone with internet holds the packet, it uploads it to the backend as if it just got signal                                                                |
-| **Dedup**           | The ciphertext's SHA-256 hash - not the packet ID, which a relay could rewrite - is checked against an idempotency cache so duplicate deliveries settle only once |
-| **Freshness Check** | Packets signed too long ago are rejected outright, closing the replay window                                                                                      |
-| **Settle**          | The backend decrypts, then debits and credits accounts atomically with optimistic locking                                                                         |
-| **Dashboard**       | A live browser UI to send payments, run gossip rounds, flush bridges, and watch the ledger update                                                                 |
-
----
-
-### Mesh Architecture
+## Architecture Overview
 
 ```mermaid
 graph TD
@@ -50,40 +44,58 @@ graph TD
     class E,F,G,H logic;
 ```
 
-## Tech Stack
+---
 
-**Backend** - Python · FastAPI · Uvicorn
-**Data** - SQLAlchemy ORM · SQLite · Pydantic
-**Security** - `cryptography` (RSA-OAEP + AES-256-GCM)
-**Frontend** - HTML · CSS · JavaScript (served via Jinja2)
-**Testing** - pytest · GitHub Actions CI
+## Features
+
+| Feature | Description |
+| ------- | ----------- |
+| **Hybrid Cryptography** | Sender devices encrypt transaction payloads via RSA-2048 (OAEP/SHA-256) combined with ephemeral AES-256-GCM symmetric keys |
+| **Peer-to-Peer Mesh Gossip** | Simulates decentralized Bluetooth multi-hop forwarding with configurable Time-To-Live (TTL) decrements |
+| **Opportunistic Ingestion** | Internet-connected bridge nodes automatically ingest gathered payloads to backend APIs without possessing decryption rights |
+| **Ciphertext-Based Idempotency** | Uses SHA-256 digests of the raw ciphertext (rather than spoofable packet IDs) to prevent double-spending across multi-path relays |
+| **Replay & Freshness Windows** | Rejects expired transaction signatures outright, preventing delayed replay injection attacks |
+| **Optimistic Lock Settlement** | Atomically executes account balance transfers using SQLAlchemy optimistic locking and version columns |
+| **Interactive Operations UI** | Live browser dashboard for initiating transfers, triggering gossip rounds, and observing real-time ledger settlement |
 
 ---
 
-## Directory Structure
+## Technology Stack
+
+| Component | Technology |
+| --------- | ---------- |
+| Backend API | Python 3.10+, FastAPI, Uvicorn |
+| Database & ORM | SQLite, SQLAlchemy ORM, Pydantic |
+| Cryptography | `cryptography` (RSA-OAEP, AES-256-GCM, SHA-256) |
+| Frontend | HTML5, CSS3, JavaScript, Jinja2 Templates |
+| Testing & CI | pytest, ruff, GitHub Actions CI |
+| Containerization | Docker, Docker Compose |
+
+---
+
+## Project Structure
 
 ```
 UPI-Mesh/
-│
 ├── app/
-│   ├── main.py                       # FastAPI app + routes
-│   ├── models.py                     # SQLAlchemy models (accounts, transactions)
-│   ├── schemas.py                    # Pydantic DTOs (wire format)
-│   ├── database.py                   # Engine/session setup
-│   ├── crypto_service.py             # Hybrid RSA + AES-GCM encrypt/decrypt/hash
-│   ├── idempotency_service.py        # Thread-safe dedup cache with TTL eviction
-│   ├── settlement_service.py         # Ledger debit/credit, optimistic locking
-│   ├── mesh_simulator_service.py     # Gossip simulation across virtual phones
-│   ├── virtual_device.py             # A single simulated phone
-│   ├── bridge_ingestion_service.py   # decrypt → dedup → freshness → settle pipeline
-│   ├── demo_service.py               # Seed accounts + build sample packets
-│   └── templates/dashboard.html      # Live dashboard UI
-│
-├── tests/                            # pytest suite (27 tests)
-├── .github/workflows/ci.yml          # CI across Python 3.10-3.12
-├── requirements.txt
-├── requirements-dev.txt
-└── README.md                         # You are here
+│   ├── main.py                     # FastAPI application routes and startup handlers
+│   ├── models.py                   # SQLAlchemy ORM models (Accounts, Transactions)
+│   ├── schemas.py                  # Pydantic request and response schemas
+│   ├── database.py                 # SQLite engine and session factory
+│   ├── crypto_service.py           # RSA-OAEP + AES-GCM hybrid encryption engine
+│   ├── idempotency_service.py      # Thread-safe deduplication cache with TTL expiration
+│   ├── settlement_service.py       # Atomic balance transfers with optimistic concurrency
+│   ├── mesh_simulator_service.py   # Multi-device gossip network simulator
+│   ├── virtual_device.py           # Simulated device node representation
+│   ├── bridge_ingestion_service.py # Decrypt, deduplicate, verify freshness, and settle
+│   ├── demo_service.py             # Seed demo bank accounts and sample transfers
+│   └── templates/dashboard.html    # Interactive simulator and live ledger dashboard
+├── tests/                          # Automated test suite (28 test scenarios)
+├── docker-compose.yml              # Multi-container orchestration
+├── Dockerfile                      # Application container specification
+├── requirements.txt                # Production dependencies
+├── ruff.toml                       # Linting and style rules
+└── README.md
 ```
 
 ---
@@ -92,8 +104,8 @@ UPI-Mesh/
 
 ### Prerequisites
 
-- Python 3.x
-- pip
+- Python 3.10+
+- pip package manager (or Docker)
 
 ### 1. Clone the repository
 
@@ -108,33 +120,33 @@ cd UPI-Mesh
 pip install -r requirements.txt
 ```
 
-### 3. Start the server
+### 3. Start the application server
 
 ```bash
 uvicorn app.main:app --reload --port 8080
 ```
 
-### 4. Open the dashboard
+### 4. Access the mesh simulator
 
-Once the server is running, open `http://localhost:8080` in your browser. Compose a payment, run gossip rounds, flush bridge nodes, and watch the mesh state and ledger update live.
+Navigate to `http://localhost:8080` in your browser. Compose demo payments between accounts, execute gossip exchanges, and flush bridge nodes to observe real-time atomic ledger updates.
 
 ---
 
 ## API Reference
 
-| Method | Endpoint             | Description                                                                                        |
-| ------ | -------------------- | -------------------------------------------------------------------------------------------------- |
-| `GET`  | `/api/server-key`    | Fetch the server's RSA public key                                                                  |
-| `POST` | `/api/demo/send`     | Simulate a sender phone creating and injecting a packet                                            |
-| `GET`  | `/api/mesh/state`    | What each simulated device currently holds                                                         |
-| `POST` | `/api/mesh/gossip`   | Run one round of phone-to-phone packet exchange                                                    |
-| `POST` | `/api/mesh/flush`    | Bridge nodes upload everything they hold (parallelized, to exercise idempotency under concurrency) |
-| `POST` | `/api/mesh/reset`    | Clear the mesh and idempotency cache                                                               |
-| `POST` | `/api/bridge/ingest` | The production endpoint - headers `X-Bridge-Node-Id`, `X-Hop-Count`                                |
-| `GET`  | `/api/accounts`      | List demo accounts and balances                                                                    |
-| `GET`  | `/api/transactions`  | Last 20 settled/rejected transactions                                                              |
+| Method | Endpoint | Description |
+| ------ | -------- | ----------- |
+| `GET` | `/api/server-key` | Retrieve the central settlement server's RSA public key |
+| `POST` | `/api/demo/send` | Simulate a sender creating and broadcasting an encrypted packet |
+| `GET` | `/api/mesh/state` | Query current packet buffers across all virtual devices |
+| `POST` | `/api/mesh/gossip` | Trigger a round of peer-to-peer packet gossip |
+| `POST` | `/api/mesh/flush` | Force bridge nodes to upload held packets in parallel |
+| `POST` | `/api/mesh/reset` | Clear mesh buffers and reset idempotency records |
+| `POST` | `/api/bridge/ingest` | Production ingestion endpoint accepting bridged encrypted payloads |
+| `GET` | `/api/accounts` | List active test accounts and current balances |
+| `GET` | `/api/transactions` | Query recent settled and rejected transactions |
 
-### Example: send a demo payment via curl
+### Example Payment Request
 
 ```bash
 curl -X POST http://localhost:8080/api/demo/send \
@@ -146,34 +158,42 @@ curl -X POST http://localhost:8080/api/demo/send \
 
 ## Running the Tests
 
+Execute the comprehensive test suite covering cryptographic verification, concurrency, and settlement invariants:
+
 ```bash
 pip install -r requirements-dev.txt
 pytest -v
 ```
 
-28 tests cover the crypto round-trip and tamper detection, idempotency claim/evict semantics, ledger debit/credit correctness, mesh gossip/TTL behavior, and the full decrypt → dedup → freshness → settle pipeline.
+Run static code analysis and linting:
 
----
-
-## Design Notes
-
-- **Why hash the ciphertext, not the packet ID, for idempotency?** An intermediate phone can freely rewrite the outer `packet_id`; it cannot forge a ciphertext that decrypts to a different valid payload. Two delivered copies of the same encrypted packet always hash identically.
-- **Why optimistic locking on accounts?** The idempotency layer should always catch duplicates first, but a version column on `Account` means a race that somehow slips past it fails loudly (`StaleDataError`) instead of silently corrupting a balance.
-- **SQLite gotcha:** autoincrement primary keys on SQLite only work with a plain `Integer` column - a `BigInteger` primary key silently stays `NULL` on insert.
-
----
-
-## License
-
-MIT - see [LICENSE](LICENSE).
+```bash
+ruff check .
+```
 
 ---
 
 ## Deployment
 
-- **API URL:** https://upi-mesh.duckdns.org/docs
-- **Dashboard URL:** https://upi-mesh.duckdns.org/
+The application is fully containerized using Docker:
+
+```bash
+docker-compose up -d --build
+```
+
+Live deployments:
+- **API Documentation:** [upi-mesh.duckdns.org/docs](https://upi-mesh.duckdns.org/docs)
+- **Mesh Simulator:** [upi-mesh.duckdns.org](https://upi-mesh.duckdns.org/)
 
 ---
 
+## Known Limitations
 
+- In the current simulation, peer device discovery relies on simulated proximity graphs; native mobile deployment requires physical Bluetooth Low Energy (BLE) peripheral/central GATT service pairing.
+- Offline balances rely on delayed batch synchronization; client devices cannot prevent offline double-spending without secure hardware enclave counters.
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.

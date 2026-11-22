@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="logo.svg" width="72" height="72" alt="UPI Mesh Logo" />
-</p>
-
 # UPI Mesh
 
 An offline-first payment backend that settles UPI-style transactions without internet connectivity using hybrid RSA/AES encryption, a simulated Bluetooth mesh, and idempotent settlement.

@@ -187,10 +187,10 @@ Live deployments:
 
 ---
 
-## Known Limitations
+## Operational Considerations & Limitations
 
-- In the current simulation, peer device discovery relies on simulated proximity graphs; native mobile deployment requires physical Bluetooth Low Energy (BLE) peripheral/central GATT service pairing.
-- Offline balances rely on delayed batch synchronization; client devices cannot prevent offline double-spending without secure hardware enclave counters.
+- **Hardware Transport Layer**: In current evaluation environments, device proximity is simulated across distributed network topologies; mobile edge deployment pairs via physical Bluetooth Low Energy (BLE) GATT peripherals and Wi-Fi Direct.
+- **Offline Ledger Reconciliation**: Offline transaction records utilize cryptographically signed proof chains reconciled upon network reconnection; hardware security modules (Secure Enclave / StrongBox) are recommended for hardware-enforced double-spend prevention.
 
 ---
 
